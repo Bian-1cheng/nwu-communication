@@ -1,12 +1,23 @@
 package com.bian.nwucommunication.controller;
 
 
+
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
 import com.bian.nwucommunication.common.result.Result;
 import com.bian.nwucommunication.common.result.Results;
 
 
+import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.UserLoginDTO;
+
+
+import com.bian.nwucommunication.service.UserService;
+import com.bian.nwucommunication.service.impl.UserServiceImpl;
+import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +25,12 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/fs")
 public class UserInfoController {
+
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @Resource
+    private UserService userServiceImpl;
 
     @PostMapping("/addInfo")
     private Result<String> bindUserInfo(HttpServletRequest request,
@@ -25,7 +42,6 @@ public class UserInfoController {
                                         @RequestParam(value = "identification") int identification,
                                         @RequestParam(value = "file") MultipartFile file){
         System.out.println(nick_name);
-        System.out.println(file);
 
         return Results.success("绑定成功");
     }
@@ -33,9 +49,15 @@ public class UserInfoController {
 
 
     @PostMapping("/login")
-    private Result<String> login(@RequestBody UserLoginDTO userLoginDTO){
-        System.out.println(userLoginDTO);
-        return Results.success("绑定成功");
+    private Result<?> login(@RequestBody UserLoginDTO userLoginDTO){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("rank_forth",userLoginDTO.getUsername());
+        queryWrapper.eq("rank_fifth",userLoginDTO.getPassword());
+        UserInfo userInfo = (UserInfo) userServiceImpl.getOne(queryWrapper);
+        if(userInfo == null)
+            return Results.failure(BaseErrorCode.USER_NAME_VERIFY_ERROR);
+    //        redisTemplate.opsForValue().set("userLoginDTO",userLoginDTO);
+        return Results.success(userInfo);
     }
 
 

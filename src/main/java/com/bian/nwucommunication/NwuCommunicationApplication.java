@@ -4,8 +4,9 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@MapperScan("com.bian.nwucommunication.mapper")
+
 @SpringBootApplication
+@MapperScan(basePackages = {"com.bian.nwucommunication.mapper"})
 public class NwuCommunicationApplication {
 
     public static void main(String[] args) {
