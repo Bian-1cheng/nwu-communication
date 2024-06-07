@@ -1,12 +1,14 @@
 package com.bian.nwucommunication.dao;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * <p>
@@ -19,20 +21,32 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Accessors(chain = true)
-public class Schoolinfo implements Serializable {
+public class FileInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    private Integer schoolId;
+    private String path;
 
-    private String name;
+    private String title;
 
-    private Integer grade;
+    @TableField("greatNum")
+    private Integer greatNum;
 
-    private String rankSecond;
+    private Boolean isScore;
+
+    private LocalDate pushDate;
+
+    private String keyWord;
+
+    private Integer isPass;
+
+    @TableField("downNum")
+    private Integer downNum;
+
+    private String rankFirst;
 
     private String rankThird;
 
@@ -40,7 +54,12 @@ public class Schoolinfo implements Serializable {
 
     private String rankFifth;
 
-    private Integer sum;
+    private Integer schoolIdId;
+
+    @TableField("userId_id")
+    private Integer useridId;
+
+    private String schoolName;
 
 
 }
