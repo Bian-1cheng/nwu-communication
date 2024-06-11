@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 @Data
 public class UserDTO {
+    private Integer id;
 
     private String headImg;
 

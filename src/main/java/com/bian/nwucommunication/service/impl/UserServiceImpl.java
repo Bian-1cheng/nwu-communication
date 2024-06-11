@@ -20,7 +20,7 @@ import static com.bian.nwucommunication.util.RedisConstants.LOGIN_USER_KEY;
 
 @Service
 @Slf4j
-public class UserServiceImpl extends ServiceImpl implements UserService {
+public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements UserService {
 
     @Resource
     private UserMapper userMapper;
