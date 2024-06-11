@@ -27,12 +27,17 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+        if (request.getMethod().equals("OPTIONS")) {
+            return true;
+        }
         String token = request.getHeader("token");
         if(StrUtil.isBlank(token)){
             response.setStatus(401);
             return false;
         }
         UserDTO userDTO = JSONUtil.toBean((String) redisTemplate.opsForValue().get(LOGIN_USER_KEY + token), UserDTO.class);
+        if(userDTO == null)
+            return false;
         UserHolder.saveUser(userDTO);
         redisTemplate.expire(LOGIN_USER_KEY+token,LOGIN_USER_TTL, TimeUnit.MINUTES);
         UserHolder.saveUser(userDTO);
