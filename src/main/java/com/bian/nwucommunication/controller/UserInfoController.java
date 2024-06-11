@@ -9,6 +9,7 @@ import com.bian.nwucommunication.common.result.Results;
 
 
 import com.bian.nwucommunication.dao.UserInfo;
+import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.dto.UserLoginDTO;
 
 
@@ -30,7 +31,7 @@ public class UserInfoController {
     private RedisTemplate<String, Object> redisTemplate;
 
     @Resource
-    private UserService userServiceImpl;
+    private UserService userService;
 
     @PostMapping("/addInfo")
     private Result<String> bindUserInfo(HttpServletRequest request,
@@ -50,17 +51,19 @@ public class UserInfoController {
 
     @PostMapping("/login")
     private Result<?> login(@RequestBody UserLoginDTO userLoginDTO){
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("rank_forth",userLoginDTO.getUsername());
-        queryWrapper.eq("rank_fifth",userLoginDTO.getPassword());
-        UserInfo userInfo = (UserInfo) userServiceImpl.getOne(queryWrapper);
-        if(userInfo == null)
+
+        UserDTO userDTO = userService.login(userLoginDTO);
+        if(userDTO == null)
             return Results.failure(BaseErrorCode.USER_NAME_VERIFY_ERROR);
     //        redisTemplate.opsForValue().set("userLoginDTO",userLoginDTO);
-        return Results.success(userInfo);
+        return Results.success(userDTO);
     }
 
-
+    @GetMapping("/getMessage")
+    private Result<String> getMessage(){
+        System.out.println("userLoginDTO");
+        return Results.success("获取成功");
+    }
 
     @GetMapping("/test")
     private Result<String> test(){

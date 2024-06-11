@@ -1,6 +1,7 @@
 package com.bian.nwucommunication.dao;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -38,9 +39,11 @@ public class UserInfo implements Serializable {
 
     private Integer identification;
 
-    private String rankForth;
+    @TableField(value = "rank_forth")
+    private String username;
 
-    private String rankFifth;
+    @TableField(value = "rank_fifth")
+    private String password;
 
     private Integer userId;
 
@@ -48,7 +51,8 @@ public class UserInfo implements Serializable {
 
     private String phone;
 
-    private String headimg;
+    @TableField(value = "headimg")
+    private String headImg;
 
 
 }

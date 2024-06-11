@@ -9,18 +9,18 @@ import java.time.LocalDateTime;
 @Data
 public class UserDTO {
 
-    private File file;
+    private String headImg;
 
     private Integer identification;
 
-    private String nick_name;
+    private String nickName;
 
-    private String school_name;
-
-    private String phoneNum;
+    private String schoolName;
 
     private String phone;
 
     private String email;
+
+    private String token;
 
 }
