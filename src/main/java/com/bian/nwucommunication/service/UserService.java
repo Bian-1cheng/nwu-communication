@@ -6,7 +6,7 @@ import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.dto.UserLoginDTO;
 import org.springframework.stereotype.Service;
 
-
+@Service
 public interface UserService extends IService<UserInfo> {
 
     UserDTO login(UserLoginDTO userLoginDTO);

@@ -48,7 +48,8 @@ public class FileInfo implements Serializable {
     @TableField("downNum")
     private Integer downNum;
 
-    private String rankFirst;
+    @TableField("rank_first")
+    private String intro;
 
     private String rankThird;
 
