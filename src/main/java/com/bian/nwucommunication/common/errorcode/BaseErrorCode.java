@@ -24,7 +24,11 @@ public enum BaseErrorCode implements IErrorCode{
     SERVICE_TIMEOUT_ERROR("B000100", "系统执行超时"),
 
     // ========== 一级宏观错误码 调用第三方服务出错 ==========
-    REMOTE_ERROR("C000001", "调用第三方服务出错");
+    REMOTE_ERROR("C000001", "调用第三方服务出错"),
+
+    // ========== 二级宏观错误码 文件相关出错 ==========
+    FILE_LIST_EMPTY("D000001","文件列表为空");
+
 
     private final String code;
 
