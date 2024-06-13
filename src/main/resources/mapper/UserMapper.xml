@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bian.nwucommunication.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="com.bian.nwucommunication.dto.UserDTO">
+        <id column="id" property="id" />
+        <result column="school_id" property="schoolId" />
+        <result column="headimg" property="headImg" />
+        <result column="identification" property="identification" />
+        <result column="nick_name" property="nickName" />
+        <result column="name" property="schoolName" />
+        <result column="phone" property="phone" />
+        <result column="email" property="email" />
+    </resultMap>
+
+    <select id="queryUserId" resultMap="UserResultMap" parameterType="java.lang.Long">
+        SELECT
+            v.`id`, v.`school_id`, v.`headimg`, v.`identification`, v.`nick_name`, sv.`name`,
+            v.`phone`, v.`email`
+        FROM fsahre_userinfo v
+        LEFT JOIN  fsahre_schoolinfo sv ON v.school_id = sv.id
+        WHERE v.id = #{id}
+    </select>
+</mapper>

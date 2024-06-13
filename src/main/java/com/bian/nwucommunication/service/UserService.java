@@ -10,4 +10,5 @@ import org.springframework.stereotype.Service;
 public interface UserService extends IService<UserInfo> {
 
     UserDTO login(UserLoginDTO userLoginDTO);
+
 }

@@ -2,6 +2,7 @@ package com.bian.nwucommunication.controller;
 
 
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -10,6 +11,7 @@ import com.bian.nwucommunication.common.result.Result;
 import com.bian.nwucommunication.common.result.Results;
 
 
+import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dao.Notice;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.UserDTO;
@@ -17,6 +19,8 @@ import com.bian.nwucommunication.dto.UserLoginDTO;
 
 
 import com.bian.nwucommunication.mapper.NoticeMapper;
+import com.bian.nwucommunication.mapper.UserMapper;
+import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.service.UserService;
 import com.bian.nwucommunication.service.impl.UserServiceImpl;
 import com.bian.nwucommunication.util.UserHolder;
@@ -39,6 +43,12 @@ public class UserInfoController {
 
     @Resource
     private UserService userService;
+
+    @Resource
+    private UserMapper userMapper;
+
+    @Resource
+    private FileInfoService fileInfoService;
 
     @Resource
     private NoticeMapper noticeMapper;
@@ -74,6 +84,13 @@ public class UserInfoController {
         if(CollUtil.isEmpty(notices))
             return Results.success("没有新消息");
         return Results.success(notices);
+    }
+
+    @GetMapping("/fileuser/{id}")
+    private Result<?> getFileUser(@PathVariable("id") long id){
+        FileInfo fileInfo = fileInfoService.getById(id);
+        UserDTO userDTO = userMapper.queryUserId(fileInfo.getUseridId());
+        return Results.success(userDTO);
     }
 
     @GetMapping("/test")

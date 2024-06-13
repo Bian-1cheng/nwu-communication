@@ -30,9 +30,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     @Resource
     private UserMapper userMapper;
 
-//    @Resource
-//    private SchoolMapper schoolMapper;
-
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
