@@ -32,7 +32,7 @@ import java.util.Set;
 
 @Service
 @Slf4j
-public class FileInfoServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements FileInfoService {
+public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> implements FileInfoService {
 
     @Resource
     private FileInfoMapper fileInfoMapper;
