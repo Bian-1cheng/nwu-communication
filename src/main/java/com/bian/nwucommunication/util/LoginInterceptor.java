@@ -35,12 +35,11 @@ public class LoginInterceptor implements HandlerInterceptor {
             response.setStatus(401);
             return false;
         }
-        UserDTO userDTO = JSONUtil.toBean((String) redisTemplate.opsForValue().get(LOGIN_USER_KEY + token), UserDTO.class);
-        if(userDTO == null)
+        String userJson = (String)redisTemplate.opsForValue().get(LOGIN_USER_KEY + token);
+        if(JSONUtil.isNull(userJson))
             return false;
-        UserHolder.saveUser(userDTO);
+        UserHolder.saveUser(JSONUtil.toBean(userJson,UserDTO.class));
         redisTemplate.expire(LOGIN_USER_KEY+token,LOGIN_USER_TTL, TimeUnit.MINUTES);
-        UserHolder.saveUser(userDTO);
         return true;
     }
 

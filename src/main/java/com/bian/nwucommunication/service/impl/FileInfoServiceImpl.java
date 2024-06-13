@@ -13,6 +13,7 @@ import com.bian.nwucommunication.mapper.FileInfoMapper;
 import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.util.RedisConstants;
+import com.bian.nwucommunication.util.RedisUtil;
 import com.bian.nwucommunication.util.UserHolder;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -62,15 +63,16 @@ public class FileInfoServiceImpl extends ServiceImpl<UserMapper,UserInfo> implem
 
     @Override
     public List<FileInfoDTO> queryAllSchool() {
-        String json = (String) redisTemplate.opsForValue().get(RedisConstants.CACHE_All_School_KEY+"*");
-        // TODO  根据前缀查出所有的文件数据
-//        Set keys = RedisTemplate.keys(RedisConstants.CACHE_All_School_KEY + "*");
-        if (json != null){
-            return Collections.singletonList(JSONUtil.toBean(json, FileInfoDTO.class));
+        Set keys = new RedisUtil().scanKeys(redisTemplate, RedisConstants.CACHE_All_School_KEY, 100);
+        if (!CollUtil.isEmpty(keys)){
+            List<String> fileList = redisTemplate.opsForValue().multiGet(keys);
+            List<FileInfoDTO> fileListDTO = new ArrayList<>();
+            for(String item : fileList) {
+                fileListDTO.add(JSONUtil.toBean(item, FileInfoDTO.class));
+            }
+            return fileListDTO;
         }
         List<FileInfo> fileList = fileInfoMapper.selectList(new QueryWrapper<FileInfo>().eq("is_pass", "1"));
-        if (CollUtil.isEmpty(fileList))
-            return null;
         for (FileInfo item : fileList) {
             redisTemplate.opsForValue().set(RedisConstants.CACHE_All_School_KEY+item.getId()+":",JSONUtil.toJsonStr(item));
         }
