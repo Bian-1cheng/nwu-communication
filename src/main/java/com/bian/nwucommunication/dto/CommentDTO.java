@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Data
 public class CommentDTO {
@@ -21,4 +22,6 @@ public class CommentDTO {
     private String nickName;
 
     private String headImg;
+
+    private List<ReplyDTO> reply;
 }

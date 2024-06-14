@@ -49,10 +49,11 @@ public class Comment implements Serializable {
 
     private String rankFifth;
 
-    private Integer fileidId;
+    @TableField("fileid_id")
+    private Integer fileId;
 
     @TableField("userId_id")
-    private Integer useridId;
+    private Integer userId;
 
     private String rankFirst;
 
