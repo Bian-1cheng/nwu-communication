@@ -89,7 +89,7 @@ public class UserInfoController {
     @GetMapping("/fileuser/{id}")
     private Result<?> getFileUser(@PathVariable("id") long id){
         FileInfo fileInfo = fileInfoService.getById(id);
-        UserDTO userDTO = userMapper.queryUserId(fileInfo.getUseridId());
+        UserDTO userDTO = userMapper.queryUserId(fileInfo.getUserId());
         return Results.success(userDTO);
     }
 

@@ -2,12 +2,15 @@ package com.bian.nwucommunication.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.FileInfoDTO;
+import com.bian.nwucommunication.dto.FileUploadDTO;
 import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.mapper.FileInfoMapper;
 import com.bian.nwucommunication.mapper.UserMapper;
@@ -22,6 +25,7 @@ import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -79,4 +83,19 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
         return BeanUtil.copyToList(fileList, FileInfoDTO.class);
     }
 
+    @Override
+    public void uploadFile(FileUploadDTO fileUploadDTO, MultipartFile file) {
+        UserDTO user = UserHolder.getUser();
+//        FileInfo fileInfo = BeanUtil.copyProperties(fileUploadDTO, FileInfo.class, false);
+        FileInfo fileInfo = BeanUtil.toBeanIgnoreCase(fileUploadDTO, FileInfo.class, true);
+        fileInfo.setDownNum(0);
+        fileInfo.setGreatNum(0);
+        fileInfo.setPushDate(LocalDateTimeUtil.parseDate(DateUtil.today()));
+        fileInfo.setUserId(user.getId());
+        fileInfo.setPath("");
+        fileInfo.setIsScore(false);
+        fileInfo.setIsPass(0);
+        fileInfo.setSchoolId(user.getSchoolId());
+        fileInfoMapper.insert(fileInfo);
+    }
 }

@@ -43,6 +43,7 @@ public class FileInfo implements Serializable {
 
     private String keyWord;
 
+    // 0 --待审核  1--审核通过 3-- 审核不通过
     private Integer isPass;
 
     @TableField("downNum")
@@ -57,10 +58,11 @@ public class FileInfo implements Serializable {
 
     private String rankFifth;
 
-    private Integer schoolIdId;
+    @TableField("school_id_id")
+    private Integer schoolId;
 
     @TableField("userId_id")
-    private Integer useridId;
+    private Integer userId;
 
     private String schoolName;
 
