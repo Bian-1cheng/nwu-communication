@@ -15,6 +15,7 @@ import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.mapper.FileInfoMapper;
 import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.FileInfoService;
+import com.bian.nwucommunication.util.FileOperateUtil;
 import com.bian.nwucommunication.util.RedisConstants;
 import com.bian.nwucommunication.util.RedisUtil;
 import com.bian.nwucommunication.util.UserHolder;
@@ -43,6 +44,9 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
 
     @Resource
     private RedisTemplate redisTemplate;
+    
+    @Resource
+    private FileOperateUtil fileOperateUtil;
 
     @Override
     public List<FileInfoDTO> queryMyFile() {
@@ -87,12 +91,13 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     public void uploadFile(FileUploadDTO fileUploadDTO, MultipartFile file) {
         UserDTO user = UserHolder.getUser();
 //        FileInfo fileInfo = BeanUtil.copyProperties(fileUploadDTO, FileInfo.class, false);
+        String imgStr = fileOperateUtil.upload(file);
         FileInfo fileInfo = BeanUtil.toBeanIgnoreCase(fileUploadDTO, FileInfo.class, true);
         fileInfo.setDownNum(0);
         fileInfo.setGreatNum(0);
         fileInfo.setPushDate(LocalDateTimeUtil.parseDate(DateUtil.today()));
         fileInfo.setUserId(user.getId());
-        fileInfo.setPath("");
+        fileInfo.setPath(imgStr);
         fileInfo.setIsScore(false);
         fileInfo.setIsPass(0);
         fileInfo.setSchoolId(user.getSchoolId());
