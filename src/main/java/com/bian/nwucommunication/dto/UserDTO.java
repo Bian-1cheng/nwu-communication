@@ -1,12 +1,14 @@
 package com.bian.nwucommunication.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.io.File;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 @Data
+@AllArgsConstructor
 public class UserDTO {
 
     private Integer id;

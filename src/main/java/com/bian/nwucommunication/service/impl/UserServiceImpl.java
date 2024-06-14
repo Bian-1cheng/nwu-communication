@@ -9,14 +9,18 @@ import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.FileInfoDTO;
 import com.bian.nwucommunication.dto.UserDTO;
+import com.bian.nwucommunication.dto.UserInfoDTO;
 import com.bian.nwucommunication.dto.UserLoginDTO;
 import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.UserService;
+import com.bian.nwucommunication.util.FileOperateUtil;
+import com.bian.nwucommunication.util.OssConstants;
 import com.bian.nwucommunication.util.UserHolder;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +37,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     @Resource
     private RedisTemplate<String, Object> redisTemplate;
 
+    @Resource
+    private FileOperateUtil fileOperateUtil;
 
     @Override
     public UserDTO login(UserLoginDTO userLoginDTO) {
@@ -48,5 +54,17 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
         userDTO.setToken(token);
         redisTemplate.opsForValue().set(LOGIN_USER_KEY+token, JSONUtil.toJsonStr(userDTO));
         return userDTO;
+    }
+
+    @Override
+    public UserInfoDTO addInfo(UserInfoDTO userInfoDTO, MultipartFile file) {
+        UserInfo userInfo = BeanUtil.toBean(userInfoDTO, UserInfo.class);
+        String headImg = fileOperateUtil.upload(file, OssConstants.USER_HEAD_IMG);
+        userInfo.setHeadImg(headImg);
+        userInfo.setPhone(userInfoDTO.getPassword());
+        userInfoDTO.setHeadImg(headImg);
+        userMapper.insert(userInfo);
+
+        return userInfoDTO;
     }
 }

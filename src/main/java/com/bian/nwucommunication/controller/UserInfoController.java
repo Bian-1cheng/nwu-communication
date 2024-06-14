@@ -15,6 +15,7 @@ import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dao.Notice;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.UserDTO;
+import com.bian.nwucommunication.dto.UserInfoDTO;
 import com.bian.nwucommunication.dto.UserLoginDTO;
 
 
@@ -53,18 +54,17 @@ public class UserInfoController {
     @Resource
     private NoticeMapper noticeMapper;
 
-    @PostMapping("/addInfo")
-    private Result<String> bindUserInfo(HttpServletRequest request,
-                                        @RequestParam(value = "nick_name") String nick_name,
-                                        @RequestParam(value = "school_name") String school_name,
-                                        @RequestParam(value = "phoneNum") String phoneNum,
-                                        @RequestParam(value = "email") String phone,
-                                        @RequestParam(value = "id_card") String idCard,
+    @PostMapping("/addinfo")
+    private Result<?> bindUserInfo(HttpServletRequest request,
+                                        @RequestParam(value = "nick_name") String nickName,
+                                        @RequestParam(value = "school_name") String schoolName,
+                                        @RequestParam(value = "email") String email,
                                         @RequestParam(value = "identification") int identification,
+                                        @RequestParam(value = "password") String password,
                                         @RequestParam(value = "file") MultipartFile file){
-        System.out.println(nick_name);
-
-        return Results.success("绑定成功");
+        UserInfoDTO userInfoDTO = new UserInfoDTO(nickName, schoolName, email, identification,null, password,null);
+        UserInfoDTO userInfo = userService.addInfo(userInfoDTO,file);
+        return Results.success(userInfo);
     }
 
 
@@ -74,7 +74,7 @@ public class UserInfoController {
         UserDTO userDTO = userService.login(userLoginDTO);
         if(userDTO == null)
             return Results.failure(BaseErrorCode.USER_NAME_VERIFY_ERROR);
-        return Results.success(userDTO);
+        return Results.success(userDTO,"登录成功");
     }
 
     @GetMapping("/getMessage")
@@ -89,8 +89,15 @@ public class UserInfoController {
     @GetMapping("/fileuser/{id}")
     private Result<?> getFileUser(@PathVariable("id") long id){
         FileInfo fileInfo = fileInfoService.getById(id);
-        UserDTO userDTO = userMapper.queryUserId(fileInfo.getUserId());
+        UserInfo userInfo = userMapper.selectOne(new QueryWrapper<UserInfo>().eq("id", fileInfo.getUserId()));
+        UserDTO userDTO = BeanUtil.toBean(userInfo, UserDTO.class);
         return Results.success(userDTO);
+    }
+
+    @GetMapping("/user")
+    private Result<?> getUser(){
+        UserDTO user = UserHolder.getUser();
+        return Results.success(user);
     }
 
     @GetMapping("/test")
