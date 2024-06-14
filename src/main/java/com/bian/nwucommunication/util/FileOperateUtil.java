@@ -22,7 +22,7 @@ public class FileOperateUtil {
     @Resource
     private OSSConfig ossConfig;
 
-    public String upload(MultipartFile file) {
+    public String upload(MultipartFile file, String folderPrefix) {
 
         //获取相关配置
         String bucketName = ossConfig.getBucketName();
@@ -45,7 +45,7 @@ public class FileOperateUtil {
         String extension = originalFilename.substring(originalFilename.lastIndexOf("."));
 
         //在OSS上bucket下的文件名
-        String uploadFileName = "user_head_img/"+ folder +fileName + extension;
+        String uploadFileName = folderPrefix + folder +fileName + extension;
 
         try {
             PutObjectResult result = ossClient.putObject(bucketName, uploadFileName, file.getInputStream());
