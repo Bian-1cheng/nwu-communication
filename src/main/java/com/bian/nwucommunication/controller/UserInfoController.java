@@ -72,8 +72,11 @@ public class UserInfoController {
     @PostMapping("/login")
     private Result<?> login(@RequestBody UserLoginDTO userLoginDTO){
         UserDTO userDTO = userService.login(userLoginDTO);
-        if(userDTO == null)
-            return Results.failure(BaseErrorCode.USER_NAME_VERIFY_ERROR);
+        if(userDTO == null) {
+            Result<Object> failure = Results.failure(BaseErrorCode.USER_NAME_VERIFY_ERROR);
+            System.out.println(failure);
+            return failure;
+        }
         return Results.success(userDTO,"登录成功");
     }
 
@@ -96,8 +99,12 @@ public class UserInfoController {
 
     @GetMapping("/user")
     private Result<?> getUser(){
-        UserDTO user = UserHolder.getUser();
-        return Results.success(user);
+        return Results.success(UserHolder.getUser());
+    }
+
+    @GetMapping("/code")
+    private Result<String> getCode(@RequestParam(value = "email") String email){
+        return Results.success(userService.getCode(email));
     }
 
     @GetMapping("/test")

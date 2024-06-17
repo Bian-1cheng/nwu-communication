@@ -2,6 +2,7 @@ package com.bian.nwucommunication.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,19 +14,20 @@ import com.bian.nwucommunication.dto.UserInfoDTO;
 import com.bian.nwucommunication.dto.UserLoginDTO;
 import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.UserService;
-import com.bian.nwucommunication.util.FileOperateUtil;
-import com.bian.nwucommunication.util.OssConstants;
-import com.bian.nwucommunication.util.UserHolder;
+import com.bian.nwucommunication.util.*;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
+
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
-import static com.bian.nwucommunication.util.RedisConstants.LOGIN_USER_KEY;
+import static com.bian.nwucommunication.util.RedisConstants.*;
 
 @Service
 @Slf4j
@@ -66,5 +68,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
         userMapper.insert(userInfo);
 
         return userInfoDTO;
+    }
+
+    @Override
+    public String getCode(String email) {
+        String code = RandomUtil.randomString(4);
+        redisTemplate.opsForValue().set(CACHE_CODE_KEY+email,code,CACHE_CODE_TTL, TimeUnit.MINUTES);
+
+        return code;
     }
 }
