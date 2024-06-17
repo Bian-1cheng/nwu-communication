@@ -16,4 +16,6 @@ public interface FileInfoService extends IService<FileInfo> {
     List<FileInfoDTO> queryAllSchool();
 
     void uploadFile(FileUploadDTO fileUploadDTO, MultipartFile file);
+
+    List<FileInfoDTO> searchFileByKeyword(String search);
 }

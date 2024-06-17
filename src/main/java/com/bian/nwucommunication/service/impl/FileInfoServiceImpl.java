@@ -100,4 +100,14 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
         fileInfo.setSchoolId(user.getSchoolId());
         fileInfoMapper.insert(fileInfo);
     }
+
+    @Override
+    public List<FileInfoDTO> searchFileByKeyword(String search) {
+        List<FileInfo> fileInfo = fileInfoMapper.selectList(new QueryWrapper<FileInfo>()
+                .like("key_word", search)
+                .eq("is_pass", 1));
+        if(CollUtil.isEmpty(fileInfo))
+            return null;
+        return BeanUtil.copyToList(fileInfo, FileInfoDTO.class);
+    }
 }

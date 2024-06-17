@@ -80,4 +80,12 @@ public class FileInfoController {
         return Results.success("绑定成功");
     }
 
+    @GetMapping("/filebyname/{search}")
+    private Result<?> searchFileByKeyword(@PathVariable("search") String search){
+        List<FileInfoDTO> fileInfoDTO = fileInfoService.searchFileByKeyword(search);
+        if(CollUtil.isEmpty(fileInfoDTO))
+            return Results.failure(BaseErrorCode.FILE_LIST_EMPTY);
+        return Results.success(fileInfoDTO);
+    }
+
 }
