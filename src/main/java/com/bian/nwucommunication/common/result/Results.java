@@ -79,8 +79,8 @@ public final class Results {
                 .setDataTime(new Date());
     }
 
-    public static Result<?> failure(BaseErrorCode baseErrorCode) {
-        return new Result<Void>()
+    public static <T> Result<T> failure(BaseErrorCode baseErrorCode) {
+        return new Result<T>()
                 .setCode(baseErrorCode.code())
                 .setMessage(baseErrorCode.message())
                 .setDataTime(new Date());
