@@ -77,7 +77,7 @@ public class UserInfoController {
         return Results.success(userDTO,"登录成功");
     }
 
-    @GetMapping("/getMessage")
+    @GetMapping("/message")
     private Result<?> getMessage(){
         UserDTO user = UserHolder.getUser();
         List<Notice> notices = noticeMapper.selectList(new QueryWrapper<Notice>().eq("userId_id", user.getId()));
