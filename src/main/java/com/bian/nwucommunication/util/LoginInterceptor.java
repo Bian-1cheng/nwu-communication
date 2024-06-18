@@ -13,8 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 
 import java.util.concurrent.TimeUnit;
 
-import static com.bian.nwucommunication.util.constant.RedisConstants.LOGIN_USER_KEY;
-import static com.bian.nwucommunication.util.constant.RedisConstants.LOGIN_USER_TTL;
+import  com.bian.nwucommunication.util.constant.RedisConstants;
 
 @Slf4j
 @Component
@@ -33,11 +32,11 @@ public class LoginInterceptor implements HandlerInterceptor {
             response.setStatus(401);
             return false;
         }
-        String userJson = (String)redisTemplate.opsForValue().get(LOGIN_USER_KEY + token);
+        String userJson = (String)redisTemplate.opsForValue().get(RedisConstants.LOGIN_USER_KEY + token);
         if(JSONUtil.isNull(userJson))
             return false;
         UserHolder.saveUser(JSONUtil.toBean(userJson,UserDTO.class));
-        redisTemplate.expire(LOGIN_USER_KEY+token,LOGIN_USER_TTL, TimeUnit.MINUTES);
+        redisTemplate.expire(RedisConstants.LOGIN_USER_KEY+token,RedisConstants.LOGIN_USER_TTL, TimeUnit.MINUTES);
         return true;
     }
 
