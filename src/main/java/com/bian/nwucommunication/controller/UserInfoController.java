@@ -60,9 +60,9 @@ public class UserInfoController {
                                         @RequestParam(value = "school_name") String schoolName,
                                         @RequestParam(value = "email") String email,
                                         @RequestParam(value = "identification") int identification,
-                                        @RequestParam(value = "password") String password,
+                                        @RequestParam(value = "code") String code,
                                         @RequestParam(value = "file") MultipartFile file){
-        UserInfoDTO userInfoDTO = new UserInfoDTO(nickName, schoolName, email, identification,null, password,null);
+        UserInfoDTO userInfoDTO = new UserInfoDTO(nickName, schoolName, email, identification,null, null,code);
         UserInfoDTO userInfo = userService.addInfo(userInfoDTO,file);
         return Results.success(userInfo);
     }
@@ -102,9 +102,9 @@ public class UserInfoController {
         return Results.success(UserHolder.getUser());
     }
 
-    @GetMapping("/code")
+    @PostMapping("/code")
     private Result<String> getCode(@RequestParam(value = "email") String email){
-        return Results.success(userService.getCode(email));
+        return Results.success(userService.getCode(email),"获取验证码成功");
     }
 
     @GetMapping("/test")

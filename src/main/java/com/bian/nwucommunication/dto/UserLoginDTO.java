@@ -9,10 +9,6 @@ import java.io.Serializable;
 @NoArgsConstructor
 public class UserLoginDTO implements Serializable {
 
-    private String username;
-
-    private String password;
-
     private String code;
 
     private String email;

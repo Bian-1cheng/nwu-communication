@@ -3,9 +3,12 @@ package com.bian.nwucommunication.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bian.nwucommunication.common.execption.ClientException;
+import com.bian.nwucommunication.common.school.SchoolEnum;
 import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.FileInfoDTO;
@@ -22,6 +25,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -44,23 +48,29 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
 
     @Override
     public UserDTO login(UserLoginDTO userLoginDTO) {
+        Boolean isRight = checkCode(userLoginDTO.getEmail(), userLoginDTO.getCode());
+        if(!isRight)
+            throw new ClientException("验证码有误");
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("rank_forth",userLoginDTO.getUsername());
-        queryWrapper.eq("rank_fifth",userLoginDTO.getPassword());
-        UserInfo userInfo = userMapper.selectOne(queryWrapper);
-        if(userInfo == null){
-            return null;
-        }
+        queryWrapper.eq("email",userLoginDTO.getEmail());
+        List userInfo = userMapper.selectList(queryWrapper);
+        if(userInfo.size() != 1)
+            throw new ClientException("邮箱不存在，请检查用户ID是否正确");
         String token = UUID.randomUUID().toString();
         UserDTO userDTO = BeanUtil.copyProperties(userInfo, UserDTO.class);
         userDTO.setToken(token);
-        redisTemplate.opsForValue().set(LOGIN_USER_KEY+token, JSONUtil.toJsonStr(userDTO));
+        redisTemplate.opsForValue().set(LOGIN_USER_KEY+token, JSONUtil.toJsonStr(userDTO),LOGIN_USER_TTL,TimeUnit.MINUTES);
         return userDTO;
     }
 
     @Override
     public UserInfoDTO addInfo(UserInfoDTO userInfoDTO, MultipartFile file) {
+        Boolean isRight = checkCode(userInfoDTO.getEmail(), userInfoDTO.getCode());
+        if(isRight)
+            return null;
+        int schoolId = SchoolEnum.getCodeByName(userInfoDTO.getSchoolName());
         UserInfo userInfo = BeanUtil.toBean(userInfoDTO, UserInfo.class);
+        userInfo.setSchoolId(schoolId);
         String headImg = fileOperateUtil.upload(file, OssConstants.USER_HEAD_IMG);
         userInfo.setHeadImg(headImg);
         userInfo.setPhone(userInfoDTO.getPassword());
@@ -72,9 +82,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
 
     @Override
     public String getCode(String email) {
-        String code = RandomUtil.randomString(4);
+        // 优化邮件发送的过程
+//        String code = RandomUtil.randomString(4);
+        String code = "1111";
+//        String send = MailUtil.send(email, EmailConstants.CODE_EMAIL_SUBJECT, code, false);
         redisTemplate.opsForValue().set(CACHE_CODE_KEY+email,code,CACHE_CODE_TTL, TimeUnit.MINUTES);
-
         return code;
+    }
+
+    private Boolean checkCode(String email,String code){
+        String cacheCode = (String) redisTemplate.opsForValue().get(CACHE_CODE_KEY + email);
+        return code.equals(cacheCode);
     }
 }
