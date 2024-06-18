@@ -1,8 +1,10 @@
 package com.bian.nwucommunication.common.result;
 
 import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
+import com.bian.nwucommunication.common.execption.AbstractException;
 
 import java.util.Date;
+import java.util.Optional;
 
 public final class Results {
 
@@ -56,18 +58,23 @@ public final class Results {
                 .setDataTime(new Date());
     }
 
-//    /**
-//     * 通过 {@link AbstractException} 构建失败响应
-//     */
-//    protected static Result<Void> failure(AbstractException abstractException) {
-//        String errorCode = Optional.ofNullable(abstractException.getErrorCode())
-//                .orElse(BaseErrorCode.SERVICE_ERROR.code());
-//        String errorMessage = Optional.ofNullable(abstractException.getErrorMessage())
-//                .orElse(BaseErrorCode.SERVICE_ERROR.message());
-//        return new Result<Void>()
-//                .setCode(errorCode)
-//                .setMessage(errorMessage);
-//    }
+    /**
+     * 通过 {@link AbstractException} 构建失败响应
+     */
+    public static Result<Void> failure(AbstractException abstractException) {
+        String errorCode = Optional.ofNullable(abstractException.getErrorCode())
+                .orElse(BaseErrorCode.SERVICE_ERROR.code());
+        String errorMessage = Optional.ofNullable(abstractException.getErrorMessage())
+                .orElse(BaseErrorCode.SERVICE_ERROR.message());
+        return new Result<Void>()
+                .setCode(errorCode)
+                .setMessage(errorMessage);
+    }
+
+    /**
+     * 通过 errorCode、errorMessage 构建失败响应
+     */
+
 
     /**
      * 通过 errorCode、errorMessage 构建失败响应
