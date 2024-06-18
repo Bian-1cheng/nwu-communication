@@ -42,11 +42,11 @@ public enum BaseErrorCode implements IErrorCode{
 
     @Override
     public String code() {
-        return null;
+        return code;
     }
 
     @Override
     public String message() {
-        return null;
+        return message;
     }
 }
