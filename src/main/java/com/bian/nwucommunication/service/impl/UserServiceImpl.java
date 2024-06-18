@@ -1,23 +1,19 @@
 package com.bian.nwucommunication.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bian.nwucommunication.common.execption.ClientException;
 import com.bian.nwucommunication.common.school.SchoolEnum;
-import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dao.UserInfo;
-import com.bian.nwucommunication.dto.FileInfoDTO;
 import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.dto.UserInfoDTO;
 import com.bian.nwucommunication.dto.UserLoginDTO;
 import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.UserService;
 import com.bian.nwucommunication.util.*;
+import com.bian.nwucommunication.util.constant.OssConstants;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,7 +27,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.bian.nwucommunication.util.RedisConstants.*;
+import static com.bian.nwucommunication.util.constant.RedisConstants.*;
 
 @Service
 @Slf4j

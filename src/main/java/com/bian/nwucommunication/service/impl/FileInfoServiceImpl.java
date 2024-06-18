@@ -8,26 +8,21 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bian.nwucommunication.dao.FileInfo;
-import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.FileInfoDTO;
 import com.bian.nwucommunication.dto.FileUploadDTO;
 import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.mapper.FileInfoMapper;
-import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.util.*;
+import com.bian.nwucommunication.util.constant.OssConstants;
+import com.bian.nwucommunication.util.constant.RedisConstants;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.connection.RedisConnection;
-import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 

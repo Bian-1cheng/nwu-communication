@@ -1,6 +1,5 @@
 package com.bian.nwucommunication.util;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.bian.nwucommunication.dto.UserDTO;
@@ -12,11 +11,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static com.bian.nwucommunication.util.RedisConstants.LOGIN_USER_KEY;
-import static com.bian.nwucommunication.util.RedisConstants.LOGIN_USER_TTL;
+import static com.bian.nwucommunication.util.constant.RedisConstants.LOGIN_USER_KEY;
+import static com.bian.nwucommunication.util.constant.RedisConstants.LOGIN_USER_TTL;
 
 @Slf4j
 @Component

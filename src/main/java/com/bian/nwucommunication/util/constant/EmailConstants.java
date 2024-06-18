@@ -1,4 +1,4 @@
-package com.bian.nwucommunication.util;
+package com.bian.nwucommunication.util.constant;
 
 public class EmailConstants {
     public static final String CODE_EMAIL_ADDRESS = "1194832004@qq.com";

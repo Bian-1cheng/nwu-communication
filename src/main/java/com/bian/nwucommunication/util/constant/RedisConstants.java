@@ -1,4 +1,4 @@
-package com.bian.nwucommunication.util;
+package com.bian.nwucommunication.util.constant;
 
 public class RedisConstants {
     public static final String LOGIN_CODE_KEY = "login:code:";
