@@ -1,6 +1,7 @@
 package com.bian.nwucommunication.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -13,18 +14,22 @@ import com.bian.nwucommunication.dto.UserLoginDTO;
 import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.UserService;
 import com.bian.nwucommunication.util.*;
+import com.bian.nwucommunication.util.constant.EmailConstants;
 import com.bian.nwucommunication.util.constant.OssConstants;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 
 
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.File;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static com.bian.nwucommunication.util.constant.RedisConstants.*;
@@ -47,11 +52,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
         Boolean isRight = checkCode(userLoginDTO.getEmail(), userLoginDTO.getCode());
         if(!isRight)
             throw new ClientException("验证码有误");
-        QueryWrapper queryWrapper = new QueryWrapper();
+        QueryWrapper queryWrapper = new QueryWrapper<UserInfo>();
         queryWrapper.eq("email",userLoginDTO.getEmail());
-        List userInfo = userMapper.selectList(queryWrapper);
-        if(userInfo.size() != 1)
-            throw new ClientException("邮箱不存在，请检查用户ID是否正确");
+        UserInfo userInfo= null;
+        try {
+            userInfo = userMapper.selectOne(queryWrapper);
+        } catch (Exception e) {
+            throw new ClientException("邮箱信息有误");
+        }
         String token = UUID.randomUUID().toString();
         UserDTO userDTO = BeanUtil.copyProperties(userInfo, UserDTO.class);
         userDTO.setToken(token);
@@ -81,13 +89,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
         // 优化邮件发送的过程
 //        String code = RandomUtil.randomString(4);
         String code = "1111";
-//        String send = MailUtil.send(email, EmailConstants.CODE_EMAIL_SUBJECT, code, false);
+//        CompletableFuture<String> futureSum = CompletableFuture.supplyAsync(() ->{
+//            return MailUtil.send(email, EmailConstants.CODE_EMAIL_SUBJECT, code, false);
+//        });
         redisTemplate.opsForValue().set(CACHE_CODE_KEY+email,code,CACHE_CODE_TTL, TimeUnit.MINUTES);
-        return code;
+        return "验证码发送成功";
     }
 
     private Boolean checkCode(String email,String code){
         String cacheCode = (String) redisTemplate.opsForValue().get(CACHE_CODE_KEY + email);
         return code.equals(cacheCode);
     }
+
 }
