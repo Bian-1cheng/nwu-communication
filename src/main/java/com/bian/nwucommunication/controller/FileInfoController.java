@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
+import com.bian.nwucommunication.common.execption.ServiceException;
 import com.bian.nwucommunication.common.result.Result;
 import com.bian.nwucommunication.common.result.Results;
 import com.bian.nwucommunication.dao.FileInfo;
@@ -36,24 +37,18 @@ public class FileInfoController {
     @GetMapping("/getMyfile")
     private Result<?> getMyFile(){
         List<FileInfoDTO> fileInfoDTO = fileInfoService.queryMyFile();
-        if (fileInfoDTO == null)
-            return Results.failure(BaseErrorCode.FILE_LIST_EMPTY);
         return Results.success(fileInfoDTO);
     }
 
     @GetMapping("/myschool")
     private Result<?> getMySchool(){
         List<FileInfoDTO> fileInfoDTO = fileInfoService.querySchool();
-        if (fileInfoDTO == null)
-            return Results.failure(BaseErrorCode.FILE_LIST_EMPTY);
         return Results.success(fileInfoDTO);
     }
 
     @GetMapping("/allschool")
     private Result<?> getAllSchool(){
         List<FileInfoDTO> fileInfoDTO = fileInfoService.queryAllSchool();
-        if (fileInfoDTO == null)
-            return Results.failure(BaseErrorCode.FILE_LIST_EMPTY);
         return Results.success(fileInfoDTO);
     }
 
@@ -62,7 +57,7 @@ public class FileInfoController {
         List<FileInfo> fileInfoList = fileInfoService.getBaseMapper().selectList(
                 new QueryWrapper<FileInfo>().orderByAsc("greatNum"));
         if (CollUtil.isEmpty(fileInfoList))
-            return Results.failure(BaseErrorCode.FILE_LIST_EMPTY);
+            throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         List<FileInfoDTO> fileInfoDTO = BeanUtil.copyToList(fileInfoList, FileInfoDTO.class);
         return Results.success(fileInfoDTO);
     }
@@ -77,14 +72,12 @@ public class FileInfoController {
                                         @RequestParam(value = "file") MultipartFile file){
         FileUploadDTO fileUploadDTO = new FileUploadDTO(title,intro,isPublic,schoolName,keyWord);
         fileInfoService.uploadFile(fileUploadDTO,file);
-        return Results.success("绑定成功");
+        return Results.success("文件上传成功");
     }
 
     @GetMapping("/filebyname/{search}")
     private Result<?> searchFileByKeyword(@PathVariable("search") String search){
         List<FileInfoDTO> fileInfoDTO = fileInfoService.searchFileByKeyword(search);
-        if(CollUtil.isEmpty(fileInfoDTO))
-            return Results.failure(BaseErrorCode.FILE_LIST_EMPTY);
         return Results.success(fileInfoDTO);
     }
 

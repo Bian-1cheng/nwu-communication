@@ -2,6 +2,8 @@ package com.bian.nwucommunication.util;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
+import com.bian.nwucommunication.common.execption.ClientException;
+import com.bian.nwucommunication.common.execption.ServiceException;
 import com.bian.nwucommunication.dto.UserDTO;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,11 +32,11 @@ public class LoginInterceptor implements HandlerInterceptor {
         String token = request.getHeader("token");
         if(StrUtil.isBlank(token)){
             response.setStatus(401);
-            return false;
+            throw new ClientException("未登录，请先登录");
         }
         String userJson = (String)redisTemplate.opsForValue().get(RedisConstants.LOGIN_USER_KEY + token);
         if(JSONUtil.isNull(userJson))
-            return false;
+            throw new ClientException("token值错误，请重新登录");
         UserHolder.saveUser(JSONUtil.toBean(userJson,UserDTO.class));
         redisTemplate.expire(RedisConstants.LOGIN_USER_KEY+token,RedisConstants.LOGIN_USER_TTL, TimeUnit.MINUTES);
         return true;
@@ -43,7 +45,7 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         //如果不删 ThreadLocal中用完的信息会有内存泄漏的风险
-//        UserThreadLocal.remove();
+        UserHolder.removeUser();
     }
 
 }

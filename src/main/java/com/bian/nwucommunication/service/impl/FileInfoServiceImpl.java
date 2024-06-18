@@ -7,6 +7,9 @@ import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
+import com.bian.nwucommunication.common.execption.ClientException;
+import com.bian.nwucommunication.common.execption.ServiceException;
 import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dto.FileInfoDTO;
 import com.bian.nwucommunication.dto.FileUploadDTO;
@@ -43,10 +46,9 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     @Override
     public List<FileInfoDTO> queryMyFile() {
         UserDTO user = UserHolder.getUser();
-        List<FileInfo> fileList = fileInfoMapper.selectList(new QueryWrapper<FileInfo>().eq("userId_id", user.getId()
-        ));
+        List<FileInfo> fileList = fileInfoMapper.selectList(new QueryWrapper<FileInfo>().eq("userId_id", user.getId()));
         if (CollUtil.isEmpty(fileList))
-            return null;
+            throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         return BeanUtil.copyToList(fileList, FileInfoDTO.class);
     }
 
@@ -57,7 +59,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
                 .eq("school_id_id", user.getSchoolId())
                 .eq("is_pass", "1"));
         if (CollUtil.isEmpty(fileList))
-            return null;
+            throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         return BeanUtil.copyToList(fileList, FileInfoDTO.class);
     }
 
@@ -66,6 +68,8 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
         Set keys = new RedisUtil().scanKeys(redisTemplate, RedisConstants.CACHE_All_School_KEY, 100);
         if (!CollUtil.isEmpty(keys)){
             List<String> fileList = redisTemplate.opsForValue().multiGet(keys);
+            if (CollUtil.isEmpty(fileList))
+                throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
             List<FileInfoDTO> fileListDTO = new ArrayList<>();
             for(String item : fileList) {
                 fileListDTO.add(JSONUtil.toBean(item, FileInfoDTO.class));
@@ -82,7 +86,6 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     @Override
     public void uploadFile(FileUploadDTO fileUploadDTO, MultipartFile file) {
         UserDTO user = UserHolder.getUser();
-//        FileInfo fileInfo = BeanUtil.copyProperties(fileUploadDTO, FileInfo.class, false);
         String imgStr = fileOperateUtil.upload(file, OssConstants.FILE_ADDRESS);
         FileInfo fileInfo = BeanUtil.toBeanIgnoreCase(fileUploadDTO, FileInfo.class, true);
         fileInfo.setDownNum(0);
@@ -102,7 +105,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
                 .like("key_word", search)
                 .eq("is_pass", 1));
         if(CollUtil.isEmpty(fileInfo))
-            return null;
+            throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         return BeanUtil.copyToList(fileInfo, FileInfoDTO.class);
     }
 }
