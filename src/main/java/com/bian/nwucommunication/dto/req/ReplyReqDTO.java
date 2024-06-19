@@ -5,7 +5,12 @@ import lombok.Data;
 @Data
 public class ReplyReqDTO {
 
-    private Integer id;
+    private Integer commentId;
 
     private String replyText;
+
+    private String toUserNickName;
+
+    private String toUserHeadImg;
+
 }

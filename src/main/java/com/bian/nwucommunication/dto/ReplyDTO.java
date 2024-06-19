@@ -1,10 +1,12 @@
 package com.bian.nwucommunication.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.time.LocalDate;
 
 @Data
+@AllArgsConstructor
 public class ReplyDTO {
 
     private Integer id;
