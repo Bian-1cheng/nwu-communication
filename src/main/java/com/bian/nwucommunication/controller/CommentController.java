@@ -6,12 +6,10 @@ import com.bian.nwucommunication.common.result.Result;
 import com.bian.nwucommunication.common.result.Results;
 import com.bian.nwucommunication.dao.Comment;
 import com.bian.nwucommunication.dto.CommentDTO;
+import com.bian.nwucommunication.dto.req.CommentReqDTO;
 import com.bian.nwucommunication.service.CommentService;
 import jakarta.annotation.Resource;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -26,6 +24,11 @@ public class CommentController {
     private Result<?> queryComments(@PathVariable("id") long id){
         List<CommentDTO> comments = commentService.queryComment(id);
         return Results.success(comments);
+    }
+
+    @PostMapping("/filecomment")
+    private Result<?> putComments(@RequestBody CommentReqDTO commentReqDTO){
+        return Results.success(commentService.putComment(commentReqDTO),"评论发表成功");
     }
 
 }
