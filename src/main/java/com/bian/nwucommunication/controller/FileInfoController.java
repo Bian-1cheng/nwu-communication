@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
+import com.bian.nwucommunication.common.execption.ClientException;
 import com.bian.nwucommunication.common.execption.ServiceException;
 import com.bian.nwucommunication.common.result.Result;
 import com.bian.nwucommunication.common.result.Results;
@@ -12,6 +13,7 @@ import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.FileInfoDTO;
 import com.bian.nwucommunication.dto.FileUploadDTO;
 import com.bian.nwucommunication.dto.UserDTO;
+import com.bian.nwucommunication.dto.resp.FileInfoDetailRespDTO;
 import com.bian.nwucommunication.mapper.FileInfoMapper;
 import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.service.UserService;
@@ -79,6 +81,15 @@ public class FileInfoController {
     private Result<?> searchFileByKeyword(@PathVariable("search") String search){
         List<FileInfoDTO> fileInfoDTO = fileInfoService.searchFileByKeyword(search);
         return Results.success(fileInfoDTO);
+    }
+
+    @GetMapping("/filedetail/{id}")
+    private Result<?> queryFileDetailById(@PathVariable("id") long id){
+        FileInfo fileInfo = fileInfoService.getById(id);
+        if(fileInfo != null)
+            return Results.success(BeanUtil.toBean(fileInfo, FileInfoDetailRespDTO.class));
+        else
+            throw new ServiceException("没有该文件");
     }
 
 }
