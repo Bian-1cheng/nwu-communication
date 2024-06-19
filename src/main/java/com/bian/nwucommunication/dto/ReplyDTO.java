@@ -13,7 +13,11 @@ public class ReplyDTO {
 
     private String replyText;
 
-    private Integer formUserId;
+    private String formUserNickName;
 
-    private Integer toUserId;
+    private String formUserHeadImg;
+
+    private String toUserNickName;
+
+    private String toUserHeadImg;
 }

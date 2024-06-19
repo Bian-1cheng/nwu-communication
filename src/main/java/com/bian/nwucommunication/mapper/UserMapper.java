@@ -13,5 +13,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface UserMapper extends BaseMapper<UserInfo> {
 
-    UserDTO queryUserId(@Param("id")long Long);
+    UserDTO queryUserId(@Param("id") long Long);
 }

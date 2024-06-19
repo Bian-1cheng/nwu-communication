@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bian.nwucommunication.mapper.ReplyMapper">
+
+    <resultMap id="ReplyResultMap" type="com.bian.nwucommunication.dto.ReplyDTO">
+        <id column="id" property="id" />
+        <result column="date" property="date" />
+        <result column="reply_text" property="replyText" />
+        <result column="form_user_nick_name" property="formUserNickName" />
+        <result column="form_user_headimg" property="formUserHeadImg" />
+        <result column="to_user_nick_name" property="toUserNickName" />
+        <result column="to_user_headimg" property="toUserHeadImg" />
+    </resultMap>
+
+    <select id="queryReplyById" resultMap="ReplyResultMap" parameterType="java.lang.Long">
+        SELECT
+            v.`id`, v.`date`, v.`reply_text`,
+            sv1.`nick_name` AS form_user_nick_name,
+            sv1.`headimg` AS form_user_headimg,
+            sv2.`nick_name` AS to_user_nick_name,
+            sv2.`headimg` AS to_user_headimg
+        FROM fsahre_reply v
+        LEFT JOIN  fsahre_userinfo sv1 ON v.form_userId_id = sv1.id
+        LEFT JOIN  fsahre_userinfo sv2 ON v.to_userId_id = sv2.id
+        WHERE v.fileid_id = #{id}
+    </select>
+
+</mapper>
