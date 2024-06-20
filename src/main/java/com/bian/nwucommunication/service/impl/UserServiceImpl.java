@@ -70,7 +70,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     @Override
     public UserInfoDTO addInfo(UserInfoDTO userInfoDTO, MultipartFile file) {
         Boolean isRight = checkCode(userInfoDTO.getEmail(), userInfoDTO.getCode());
-        if(isRight)
+        if(!isRight)
             return null;
         int schoolId = SchoolEnum.getCodeByName(userInfoDTO.getSchoolName());
         UserInfo userInfo = BeanUtil.toBean(userInfoDTO, UserInfo.class);

@@ -13,6 +13,13 @@ spring:
       password:
       port: 0000
 
+  servlet:
+    multipart:
+      # 单个文件最大大小
+      max-file-size: 10MB
+      # 所有上传文件最大大小
+      max-request-size: 10MB
+
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**Mapper.xml
 
