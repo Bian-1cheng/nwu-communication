@@ -1,10 +1,10 @@
 package com.bian.nwucommunication.config;
 
-import com.bian.nwucommunication.util.LoginInterceptor;
+import com.bian.nwucommunication.util.Interceptor.AdminInterceptor;
+import com.bian.nwucommunication.util.Interceptor.LoginInterceptor;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -20,8 +20,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class CrosConfig implements WebMvcConfigurer {
 
-    @Autowired
+    @Resource
     private LoginInterceptor loginInterceptor;
+
+    @Resource
+    private AdminInterceptor adminInterceptor;
 
     static final String ORIGINS[] = new String[]{"GET", "POST", "PUT", "DELETE"};
 
@@ -44,6 +47,8 @@ public class CrosConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/fs/login")
                 .excludePathPatterns("/fs/code")
                 .excludePathPatterns("/fs/addinfo");    //拦截所有，排除登录注册接口
+        // 非管理员身份拦截
+        registry.addInterceptor(adminInterceptor).addPathPatterns("/fs/admin/**");
     }
 
 
