@@ -68,10 +68,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     }
 
     @Override
-    public UserInfoDTO addInfo(UserInfoDTO userInfoDTO, MultipartFile file) {
+    public UserDTO addInfo(UserInfoDTO userInfoDTO, MultipartFile file) {
         Boolean isRight = checkCode(userInfoDTO.getEmail(), userInfoDTO.getCode());
         if(!isRight)
-            return null;
+            throw new ClientException("验证码有误");
+        // TODO 检查邮件是否已经注册
         int schoolId = SchoolEnum.getCodeByName(userInfoDTO.getSchoolName());
         UserInfo userInfo = BeanUtil.toBean(userInfoDTO, UserInfo.class);
         userInfo.setSchoolId(schoolId);
@@ -81,7 +82,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
         userInfoDTO.setHeadImg(headImg);
         userMapper.insert(userInfo);
 
-        return userInfoDTO;
+        return login(new UserLoginDTO( userInfoDTO.getCode(),userInfoDTO.getEmail()));
     }
 
     @Override

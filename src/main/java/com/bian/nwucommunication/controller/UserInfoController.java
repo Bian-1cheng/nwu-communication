@@ -63,8 +63,8 @@ public class UserInfoController {
                                         @RequestParam(value = "code") String code,
                                         @RequestParam(value = "file") MultipartFile file){
         UserInfoDTO userInfoDTO = new UserInfoDTO(nickName, schoolName, email, identification,null, null,code);
-        UserInfoDTO userInfo = userService.addInfo(userInfoDTO,file);
-        return Results.success(userInfo);
+        UserDTO userDTO = userService.addInfo(userInfoDTO,file);
+        return Results.success(userDTO);
     }
 
 

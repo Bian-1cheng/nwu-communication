@@ -13,7 +13,7 @@ public interface UserService extends IService<UserInfo> {
 
     UserDTO login(UserLoginDTO userLoginDTO);
 
-    UserInfoDTO addInfo(UserInfoDTO userInfoDTO, MultipartFile file);
+    UserDTO addInfo(UserInfoDTO userInfoDTO, MultipartFile file);
 
     String getCode(String email);
 
