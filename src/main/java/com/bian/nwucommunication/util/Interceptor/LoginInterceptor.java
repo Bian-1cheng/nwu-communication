@@ -1,10 +1,11 @@
-package com.bian.nwucommunication.util;
+package com.bian.nwucommunication.util.Interceptor;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.bian.nwucommunication.common.execption.ClientException;
 import com.bian.nwucommunication.common.execption.ServiceException;
 import com.bian.nwucommunication.dto.UserDTO;
+import com.bian.nwucommunication.util.UserHolder;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
