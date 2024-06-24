@@ -30,17 +30,17 @@ public class Comment implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @TableField("sendUser")
+    @TableField("send_user")
     private Integer sendUser;
 
-    @TableField("Comment_text")
+    @TableField("comment_text")
     private String commentText;
 
     private LocalDate textDate;
 
     private Boolean isShd;
 
-    @TableField("greatNum")
+    @TableField("great_num")
     private Integer greatNum;
 
     private String rankThird;
@@ -49,10 +49,10 @@ public class Comment implements Serializable {
 
     private String rankFifth;
 
-    @TableField("fileid_id")
+    @TableField("file_id")
     private Integer fileId;
 
-    @TableField("userId_id")
+    @TableField("user_id")
     private Integer userId;
 
     private String rankFirst;

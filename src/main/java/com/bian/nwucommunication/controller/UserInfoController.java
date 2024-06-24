@@ -78,7 +78,7 @@ public class UserInfoController {
     @GetMapping("/message")
     private Result<?> getMessage(){
         UserDTO user = UserHolder.getUser();
-        List<Notice> notices = noticeMapper.selectList(new QueryWrapper<Notice>().eq("userId_id", user.getId()));
+        List<Notice> notices = noticeMapper.selectList(new QueryWrapper<Notice>().eq("user_id", user.getId()));
         if(CollUtil.isEmpty(notices))
             return Results.success("没有新消息");
         return Results.success(notices);

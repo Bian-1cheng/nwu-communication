@@ -40,13 +40,13 @@ public class Reply implements Serializable {
 
     private String rankFifth;
 
-    @TableField("fileid_id")
+    @TableField("file_id")
     private Integer commentId;
 
-    @TableField("form_userId_id")
+    @TableField("form_user_id")
     private Integer formUserId;
 
-    @TableField("to_userId_id")
+    @TableField("to_user_id")
     private Integer toUserId;
 
 

@@ -46,7 +46,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
     
     @Override
     public List<CommentDTO> queryComment(long id) {
-        List<Comment> commentList = commentMapper.selectList(new QueryWrapper<Comment>().eq("fileId_id", id));
+        List<Comment> commentList = commentMapper.selectList(new QueryWrapper<Comment>().eq("file_id", id));
         List<CommentDTO> commentDTO = new ArrayList<>();
         if(CollUtil.isEmpty(commentList))
             return commentDTO;

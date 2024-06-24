@@ -42,8 +42,7 @@ public class Requirement implements Serializable {
 
     private String rankFifth;
 
-    @TableField("userId_id")
-    private Integer useridId;
-
+    @TableField("user_id")
+    private Integer userId;
 
 }

@@ -20,9 +20,9 @@
             sv2.`nick_name` AS to_user_nick_name,
             sv2.`headimg` AS to_user_headimg
         FROM fsahre_reply v
-        LEFT JOIN  fsahre_userinfo sv1 ON v.form_userId_id = sv1.id
-        LEFT JOIN  fsahre_userinfo sv2 ON v.to_userId_id = sv2.id
-        WHERE v.fileid_id = #{id}
+        LEFT JOIN  fsahre_userinfo sv1 ON v.form_user_id = sv1.id
+        LEFT JOIN  fsahre_userinfo sv2 ON v.to_user_id = sv2.id
+        WHERE v.file_id = #{id}
     </select>
 
 </mapper>

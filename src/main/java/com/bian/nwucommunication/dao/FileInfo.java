@@ -34,7 +34,7 @@ public class FileInfo implements Serializable {
 
     private String title;
 
-    @TableField("greatNum")
+    @TableField("great_num")
     private Integer greatNum;
 
     private Boolean isScore;
@@ -46,7 +46,7 @@ public class FileInfo implements Serializable {
     // 0 --待审核  1--审核通过 3-- 审核不通过
     private Integer isPass;
 
-    @TableField("downNum")
+    @TableField("down_num")
     private Integer downNum;
 
     @TableField("rank_first")
@@ -58,10 +58,10 @@ public class FileInfo implements Serializable {
 
     private String rankFifth;
 
-    @TableField("school_id_id")
+    @TableField("school_id")
     private Integer schoolId;
 
-    @TableField("userId_id")
+    @TableField("user_id")
     private Integer userId;
 
     private String schoolName;

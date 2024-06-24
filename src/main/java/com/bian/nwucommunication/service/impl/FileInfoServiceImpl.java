@@ -46,7 +46,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     @Override
     public List<FileInfoDTO> queryMyFile() {
         UserDTO user = UserHolder.getUser();
-        List<FileInfo> fileList = fileInfoMapper.selectList(new QueryWrapper<FileInfo>().eq("userId_id", user.getId()));
+        List<FileInfo> fileList = fileInfoMapper.selectList(new QueryWrapper<FileInfo>().eq("user_id", user.getId()));
         if (CollUtil.isEmpty(fileList))
             throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         return BeanUtil.copyToList(fileList, FileInfoDTO.class);
@@ -56,7 +56,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     public List<FileInfoDTO> querySchool() {
         UserDTO user = UserHolder.getUser();
         List<FileInfo> fileList = fileInfoMapper.selectList(new QueryWrapper<FileInfo>()
-                .eq("school_id_id", user.getSchoolId())
+                .eq("school_id", user.getSchoolId())
                 .eq("is_pass", "1"));
         if (CollUtil.isEmpty(fileList))
             throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);

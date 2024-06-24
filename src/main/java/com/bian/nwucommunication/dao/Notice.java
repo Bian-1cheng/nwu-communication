@@ -40,9 +40,10 @@ public class Notice implements Serializable {
 
     private String rankFifth;
 
-    private Integer fileidId;
+    @TableField("file_id")
+    private Integer fileId;
 
-    @TableField("userId_id")
+    @TableField("user_id")
     private Integer userId;
 
     private String keyWord;
