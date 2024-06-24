@@ -10,6 +10,7 @@ public enum BaseErrorCode implements IErrorCode{
     USER_NAME_EXIST_ERROR("A000111", "用户名已存在"),
     USER_NAME_SENSITIVE_ERROR("A000112", "用户名包含敏感词"),
     USER_NAME_SPECIAL_CHARACTER_ERROR("A000113", "用户名包含特殊字符"),
+    EMAIL_NOT_EXIST_ERROR("A000113", "邮箱未注册"),
     PASSWORD_VERIFY_ERROR("A000120", "密码校验失败"),
     PASSWORD_SHORT_ERROR("A000121", "密码长度不够"),
     PHONE_VERIFY_ERROR("A000151", "手机格式校验失败"),

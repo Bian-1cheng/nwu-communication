@@ -5,6 +5,7 @@ import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
 import com.bian.nwucommunication.common.execption.ClientException;
 import com.bian.nwucommunication.common.school.SchoolEnum;
 import com.bian.nwucommunication.dao.UserInfo;
@@ -54,12 +55,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
             throw new ClientException("验证码有误");
         QueryWrapper queryWrapper = new QueryWrapper<UserInfo>();
         queryWrapper.eq("email",userLoginDTO.getEmail());
-        UserInfo userInfo= null;
-        try {
-            userInfo = userMapper.selectOne(queryWrapper);
-        } catch (Exception e) {
-            throw new ClientException("邮箱信息有误");
-        }
+        UserInfo userInfo = userMapper.selectOne(queryWrapper);
+        if(userInfo == null)
+            throw new ClientException(BaseErrorCode.EMAIL_NOT_EXIST_ERROR);
         String token = UUID.randomUUID().toString();
         UserDTO userDTO = BeanUtil.copyProperties(userInfo, UserDTO.class);
         userDTO.setToken(token);

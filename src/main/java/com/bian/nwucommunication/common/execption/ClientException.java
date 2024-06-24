@@ -24,7 +24,7 @@ import com.bian.nwucommunication.common.errorcode.IErrorCode;
 public class ClientException extends AbstractException {
 
     public ClientException(IErrorCode errorCode) {
-        this(null, null, errorCode);
+        this(errorCode.message(), null, errorCode);
     }
 
     public ClientException(String message) {
