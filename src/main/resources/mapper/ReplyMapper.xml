@@ -22,7 +22,7 @@
         FROM fsahre_reply v
         LEFT JOIN  fsahre_userinfo sv1 ON v.form_user_id = sv1.id
         LEFT JOIN  fsahre_userinfo sv2 ON v.to_user_id = sv2.id
-        WHERE v.file_id = #{id}
+        WHERE v.comment_id = #{id}
     </select>
 
 </mapper>
