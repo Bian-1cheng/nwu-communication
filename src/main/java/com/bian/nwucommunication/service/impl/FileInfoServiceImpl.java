@@ -19,6 +19,7 @@ import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.util.*;
 import com.bian.nwucommunication.util.constant.OssConstants;
 import com.bian.nwucommunication.util.constant.RedisConstants;
+import com.bian.nwucommunication.util.constant.UserConstants;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -57,7 +58,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
         UserDTO user = UserHolder.getUser();
         List<FileInfo> fileList = fileInfoMapper.selectList(new QueryWrapper<FileInfo>()
                 .eq("school_id", user.getSchoolId())
-                .eq("is_pass", "1"));
+                .eq("is_pass", UserConstants.FILE_HAVE_PASS));
         if (CollUtil.isEmpty(fileList))
             throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         return BeanUtil.copyToList(fileList, FileInfoDTO.class);
@@ -65,7 +66,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
 
     @Override
     public List<FileInfoDTO> queryAllSchool() {
-        Set keys = new RedisUtil().scanKeys(redisTemplate, RedisConstants.CACHE_All_School_KEY, 100);
+        Set keys = new RedisUtil().scanKeys(redisTemplate, RedisConstants.CACHE_All_School_KEY, RedisConstants.CACHE_SCANS_COUNT);
         if (!CollUtil.isEmpty(keys)){
             List<String> fileList = redisTemplate.opsForValue().multiGet(keys);
             if (CollUtil.isEmpty(fileList))
@@ -76,7 +77,8 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
             }
             return fileListDTO;
         }
-        List<FileInfo> fileList = fileInfoMapper.selectList(new QueryWrapper<FileInfo>().eq("is_pass", "1"));
+        List<FileInfo> fileList = fileInfoMapper.selectList(
+                new QueryWrapper<FileInfo>().eq("is_pass", UserConstants.FILE_HAVE_PASS));
         for (FileInfo item : fileList) {
             redisTemplate.opsForValue().set(RedisConstants.CACHE_All_School_KEY+item.getId()+":",JSONUtil.toJsonStr(item));
         }
@@ -94,7 +96,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
         fileInfo.setUserId(user.getId());
         fileInfo.setPath(imgStr);
         fileInfo.setIsScore(false);
-        fileInfo.setIsPass(0);
+        fileInfo.setIsPass(UserConstants.FILE_WAIT_CHECK);
         fileInfo.setSchoolId(user.getSchoolId());
         fileInfoMapper.insert(fileInfo);
     }
@@ -103,7 +105,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     public List<FileInfoDTO> searchFileByKeyword(String search) {
         List<FileInfo> fileInfo = fileInfoMapper.selectList(new QueryWrapper<FileInfo>()
                 .like("key_word", search)
-                .eq("is_pass", 1));
+                .eq("is_pass", UserConstants.FILE_HAVE_PASS));
         if(CollUtil.isEmpty(fileInfo))
             throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         return BeanUtil.copyToList(fileInfo, FileInfoDTO.class);
