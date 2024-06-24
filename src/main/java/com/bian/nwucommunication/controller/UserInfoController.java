@@ -25,6 +25,7 @@ import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.service.UserService;
 import com.bian.nwucommunication.service.impl.UserServiceImpl;
 import com.bian.nwucommunication.util.UserHolder;
+import com.bian.nwucommunication.util.constant.UserConstants;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,7 +79,9 @@ public class UserInfoController {
     @GetMapping("/message")
     private Result<?> getMessage(){
         UserDTO user = UserHolder.getUser();
-        List<Notice> notices = noticeMapper.selectList(new QueryWrapper<Notice>().eq("user_id", user.getId()));
+        List<Notice> notices = noticeMapper.selectList(new QueryWrapper<Notice>()
+                .eq("user_id", user.getId())
+                .eq("is_notice", UserConstants.NOT_NOTICE));
         if(CollUtil.isEmpty(notices))
             return Results.success("没有新消息");
         return Results.success(notices);

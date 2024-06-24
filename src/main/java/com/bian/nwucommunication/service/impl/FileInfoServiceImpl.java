@@ -5,7 +5,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
 import com.bian.nwucommunication.common.execption.ClientException;
@@ -56,9 +58,11 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     @Override
     public List<FileInfoDTO> querySchool() {
         UserDTO user = UserHolder.getUser();
-        List<FileInfo> fileList = fileInfoMapper.selectList(new QueryWrapper<FileInfo>()
-                .eq("school_id", user.getSchoolId())
-                .eq("is_pass", UserConstants.FILE_HAVE_PASS));
+        LambdaQueryWrapper<FileInfo> queryWrapper = Wrappers.lambdaQuery(FileInfo.class)
+                .eq(FileInfo::getSchoolId, user.getSchoolId())
+                .eq(FileInfo::getIsPass, UserConstants.FILE_HAVE_PASS)
+                .orderByDesc(FileInfo::getPushDate);
+        List<FileInfo> fileList = fileInfoMapper.selectList(queryWrapper);
         if (CollUtil.isEmpty(fileList))
             throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         return BeanUtil.copyToList(fileList, FileInfoDTO.class);
@@ -78,7 +82,9 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
             return fileListDTO;
         }
         List<FileInfo> fileList = fileInfoMapper.selectList(
-                new QueryWrapper<FileInfo>().eq("is_pass", UserConstants.FILE_HAVE_PASS));
+                new QueryWrapper<FileInfo>()
+                        .eq("is_pass", UserConstants.FILE_HAVE_PASS)
+                        .orderByDesc("push_date"));
         for (FileInfo item : fileList) {
             redisTemplate.opsForValue().set(RedisConstants.CACHE_All_School_KEY+item.getId()+":",JSONUtil.toJsonStr(item));
         }
@@ -105,7 +111,8 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     public List<FileInfoDTO> searchFileByKeyword(String search) {
         List<FileInfo> fileInfo = fileInfoMapper.selectList(new QueryWrapper<FileInfo>()
                 .like("key_word", search)
-                .eq("is_pass", UserConstants.FILE_HAVE_PASS));
+                .eq("is_pass", UserConstants.FILE_HAVE_PASS)
+                .orderByDesc("push_date"));
         if(CollUtil.isEmpty(fileInfo))
             throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         return BeanUtil.copyToList(fileInfo, FileInfoDTO.class);

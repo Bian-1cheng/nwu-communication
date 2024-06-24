@@ -1,6 +1,9 @@
 package com.bian.nwucommunication.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.OrderItem;
+import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bian.nwucommunication.common.execption.ClientException;
@@ -23,7 +26,9 @@ public class FileCheckServiceImpl  extends ServiceImpl<FileInfoMapper, FileInfo>
     @Override
     public List<FileInfoDTO> queryAllFilePage(int currentPage, int pageSize) {
         Page<FileInfo> page = new Page<>(currentPage, pageSize);
-        Page<FileInfo> fileInfoPage = fileInfoMapper.selectPage(page, null);
+        QueryWrapper queryWrapper = new QueryWrapper<FileInfo>();
+        queryWrapper.orderByDesc("push_date");
+        Page<FileInfo> fileInfoPage = fileInfoMapper.selectPage(page, queryWrapper);
         return BeanUtil.copyToList(fileInfoPage.getRecords(), FileInfoDTO.class);
     }
 
