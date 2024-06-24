@@ -16,8 +16,10 @@ import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dto.FileInfoDTO;
 import com.bian.nwucommunication.dto.FileUploadDTO;
 import com.bian.nwucommunication.dto.UserDTO;
+import com.bian.nwucommunication.dto.req.RequirementDTO;
 import com.bian.nwucommunication.mapper.FileInfoMapper;
 import com.bian.nwucommunication.service.FileInfoService;
+import com.bian.nwucommunication.service.RequirementService;
 import com.bian.nwucommunication.util.*;
 import com.bian.nwucommunication.util.constant.OssConstants;
 import com.bian.nwucommunication.util.constant.RedisConstants;
@@ -45,6 +47,9 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     
     @Resource
     private FileOperateUtil fileOperateUtil;
+
+    @Resource
+    private RequirementService requirementService;
 
     @Override
     public List<FileInfoDTO> queryMyFile() {
@@ -113,8 +118,12 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
                 .like("key_word", search)
                 .eq("is_pass", UserConstants.FILE_HAVE_PASS)
                 .orderByDesc("push_date"));
-        if(CollUtil.isEmpty(fileInfo))
+        if(CollUtil.isEmpty(fileInfo)){
+            RequirementDTO requirementDTO = new RequirementDTO(search, LocalDateTimeUtil.parseDate(DateUtil.today()), UserHolder.getUser());
+            requirementService.insertRequirement(requirementDTO);
             throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
+        }
+
         return BeanUtil.copyToList(fileInfo, FileInfoDTO.class);
     }
 }
