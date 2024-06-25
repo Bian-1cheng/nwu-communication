@@ -47,9 +47,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
         Boolean isRight = checkCode(userLoginDTO.getEmail(), userLoginDTO.getCode());
         if(!isRight)
             throw new ClientException("验证码有误");
-        QueryWrapper queryWrapper = new QueryWrapper<UserInfo>();
-        queryWrapper.eq("email",userLoginDTO.getEmail());
-        UserInfo userInfo = userMapper.selectOne(queryWrapper);
+        UserInfo userInfo = checkUser(userLoginDTO.getEmail());
         if(userInfo == null)
             throw new ClientException(BaseErrorCode.EMAIL_NOT_EXIST_ERROR);
         String token = UUID.randomUUID().toString();
@@ -64,7 +62,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
         Boolean isRight = checkCode(userInfoDTO.getEmail(), userInfoDTO.getCode());
         if(!isRight)
             throw new ClientException("验证码有误");
-        // TODO 检查邮件是否已经注册
+        if(checkUser(userInfoDTO.getEmail()) != null)
+            throw new ClientException("该用户的信息已经绑定，请登录");
         int schoolId = SchoolEnum.getCodeByName(userInfoDTO.getSchoolName());
         UserInfo userInfo = BeanUtil.toBean(userInfoDTO, UserInfo.class);
         userInfo.setSchoolId(schoolId);
@@ -93,6 +92,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     private Boolean checkCode(String email,String code){
         String cacheCode = (String) redisTemplate.opsForValue().get(CACHE_CODE_KEY + email);
         return code.equals(cacheCode);
+    }
+
+    private UserInfo checkUser(String email){
+        QueryWrapper queryWrapper = new QueryWrapper<UserInfo>();
+        queryWrapper.eq("email",email);
+        UserInfo userInfo = userMapper.selectOne(queryWrapper);
+        return userInfo;
     }
 
 }
