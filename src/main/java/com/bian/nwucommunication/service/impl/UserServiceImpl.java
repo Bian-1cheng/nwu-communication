@@ -1,7 +1,6 @@
 package com.bian.nwucommunication.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -11,26 +10,21 @@ import com.bian.nwucommunication.common.school.SchoolEnum;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.dto.UserInfoDTO;
-import com.bian.nwucommunication.dto.UserLoginDTO;
+import com.bian.nwucommunication.dto.req.UserLoginReqDTO;
 import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.UserService;
 import com.bian.nwucommunication.util.*;
-import com.bian.nwucommunication.util.constant.EmailConstants;
 import com.bian.nwucommunication.util.constant.OssConstants;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
-import java.io.File;
-import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static com.bian.nwucommunication.util.constant.RedisConstants.*;
@@ -49,7 +43,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     private FileOperateUtil fileOperateUtil;
 
     @Override
-    public UserDTO login(UserLoginDTO userLoginDTO) {
+    public UserDTO login(UserLoginReqDTO userLoginDTO) {
         Boolean isRight = checkCode(userLoginDTO.getEmail(), userLoginDTO.getCode());
         if(!isRight)
             throw new ClientException("验证码有误");
@@ -74,13 +68,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
         int schoolId = SchoolEnum.getCodeByName(userInfoDTO.getSchoolName());
         UserInfo userInfo = BeanUtil.toBean(userInfoDTO, UserInfo.class);
         userInfo.setSchoolId(schoolId);
+        // TODO 异步处理上传文件
         String headImg = fileOperateUtil.upload(file, OssConstants.USER_HEAD_IMG);
         userInfo.setHeadImg(headImg);
         userInfo.setPhone(userInfoDTO.getPassword());
         userInfoDTO.setHeadImg(headImg);
         userMapper.insert(userInfo);
 
-        return login(new UserLoginDTO( userInfoDTO.getCode(),userInfoDTO.getEmail()));
+        return login(new UserLoginReqDTO( userInfoDTO.getCode(),userInfoDTO.getEmail()));
     }
 
     @Override

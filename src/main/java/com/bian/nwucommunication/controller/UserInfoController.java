@@ -4,9 +4,7 @@ package com.bian.nwucommunication.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
 import com.bian.nwucommunication.common.result.Result;
 import com.bian.nwucommunication.common.result.Results;
 
@@ -16,19 +14,17 @@ import com.bian.nwucommunication.dao.Notice;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.dto.UserInfoDTO;
-import com.bian.nwucommunication.dto.UserLoginDTO;
 
 
+import com.bian.nwucommunication.dto.req.UserLoginReqDTO;
 import com.bian.nwucommunication.mapper.NoticeMapper;
 import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.service.UserService;
-import com.bian.nwucommunication.service.impl.UserServiceImpl;
 import com.bian.nwucommunication.util.UserHolder;
 import com.bian.nwucommunication.util.constant.UserConstants;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -71,7 +67,7 @@ public class UserInfoController {
 
 
     @PostMapping("/login")
-    private Result<?> login(@RequestBody UserLoginDTO userLoginDTO){
+    private Result<?> login(@RequestBody UserLoginReqDTO userLoginDTO){
         UserDTO userDTO = userService.login(userLoginDTO);
         return Results.success(userDTO,"登录成功");
     }

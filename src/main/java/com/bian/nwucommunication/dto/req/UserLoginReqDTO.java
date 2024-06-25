@@ -1,4 +1,4 @@
-package com.bian.nwucommunication.dto;
+package com.bian.nwucommunication.dto.req;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginDTO implements Serializable {
+public class UserLoginReqDTO implements Serializable {
 
     private String code;
 
