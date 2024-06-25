@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-public class RequirementDTO {
+public class RequirementReqDTO {
 
     private String keyWord;
 

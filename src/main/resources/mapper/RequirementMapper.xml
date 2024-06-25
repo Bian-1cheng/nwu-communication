@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bian.nwucommunication.mapper.RequirementMapper">
+
+    <resultMap id="RequirementResultMap" type="com.bian.nwucommunication.dto.resp.RequirementRespDTO">
+        <result column="date" property="date" />
+        <result column="key_word" property="keyWord" />
+        <result column="user_id" property="userId" />
+        <result column="to_user_nick_name" property="nickName" />
+        <result column="to_user_email" property="email" />
+    </resultMap>
+
+    <select id="searchRequirementByKeyWord" resultMap="RequirementResultMap" parameterType="java.lang.String">
+        SELECT
+            v.`date`, v.`key_word`,v.`user_id`,
+            sv1.`nick_name` AS to_user_nick_name,
+            sv1.`email` AS to_user_email
+        FROM fsahre_requirement v
+        LEFT JOIN  fsahre_userinfo sv1 ON v.user_id = sv1.id
+        WHERE v.key_word like #{keyWord}
+        And v.is_notice = 0
+    </select>
+
+</mapper>
