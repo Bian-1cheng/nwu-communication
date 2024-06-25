@@ -1,4 +1,4 @@
-package com.bian.nwucommunication.util.constant;
+package com.bian.nwucommunication.common.constant;
 
 public class OssConstants {
     public static final String USER_HEAD_IMG = "user_head_img/";

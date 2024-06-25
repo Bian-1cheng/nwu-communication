@@ -7,7 +7,7 @@ import com.bian.nwucommunication.dto.req.RequirementReqDTO;
 import com.bian.nwucommunication.dto.resp.RequirementRespDTO;
 import com.bian.nwucommunication.mapper.RequirementMapper;
 import com.bian.nwucommunication.service.RequirementService;
-import com.bian.nwucommunication.util.constant.UserConstants;
+import com.bian.nwucommunication.common.constant.UserConstants;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 

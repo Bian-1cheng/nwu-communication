@@ -1,4 +1,4 @@
-package com.bian.nwucommunication.util.constant;
+package com.bian.nwucommunication.common.constant;
 
 public class UserConstants {
 

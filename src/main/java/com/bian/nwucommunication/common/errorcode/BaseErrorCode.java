@@ -13,7 +13,7 @@ public enum BaseErrorCode implements IErrorCode{
     EMAIL_NOT_EXIST_ERROR("A000113", "邮箱未注册"),
     PASSWORD_VERIFY_ERROR("A000120", "密码校验失败"),
     PASSWORD_SHORT_ERROR("A000121", "密码长度不够"),
-    PHONE_VERIFY_ERROR("A000151", "手机格式校验失败"),
+    TOO_MANY_REQUESTS("A000130", "请求次数过多，请稍后访问"),
 
     // ========== 二级宏观错误码 系统请求缺少幂等Token ==========
     IDEMPOTENT_TOKEN_NULL_ERROR("A000200", "幂等Token为空"),

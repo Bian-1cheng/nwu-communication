@@ -22,7 +22,7 @@ import com.bian.nwucommunication.mapper.UserMapper;
 import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.service.UserService;
 import com.bian.nwucommunication.util.UserHolder;
-import com.bian.nwucommunication.util.constant.UserConstants;
+import com.bian.nwucommunication.common.constant.UserConstants;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.data.redis.core.RedisTemplate;

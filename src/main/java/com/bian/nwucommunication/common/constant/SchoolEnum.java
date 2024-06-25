@@ -1,4 +1,4 @@
-package com.bian.nwucommunication.common.school;
+package com.bian.nwucommunication.common.constant;
 
 
 public enum SchoolEnum {
