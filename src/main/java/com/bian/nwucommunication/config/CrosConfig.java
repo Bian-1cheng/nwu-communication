@@ -2,6 +2,7 @@ package com.bian.nwucommunication.config;
 
 import com.bian.nwucommunication.util.Interceptor.AdminInterceptor;
 import com.bian.nwucommunication.util.Interceptor.LoginInterceptor;
+import com.bian.nwucommunication.util.Interceptor.RateLimitInterceptor;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,9 @@ public class CrosConfig implements WebMvcConfigurer {
     @Resource
     private AdminInterceptor adminInterceptor;
 
+    @Resource
+    private RateLimitInterceptor rateLimitInterceptor;
+
     static final String ORIGINS[] = new String[]{"GET", "POST", "PUT", "DELETE"};
 
     @Override
@@ -49,6 +53,7 @@ public class CrosConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/fs/addinfo");    //拦截所有，排除登录注册接口
         // 非管理员身份拦截
         registry.addInterceptor(adminInterceptor).addPathPatterns("/fs/admin/**");
+        registry.addInterceptor(rateLimitInterceptor).addPathPatterns("/fs/**");
     }
 
 

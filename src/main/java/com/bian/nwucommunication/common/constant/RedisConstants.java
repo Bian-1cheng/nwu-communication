@@ -14,6 +14,12 @@ public class RedisConstants {
     public static final Long CACHE_CODE_TTL = 30L;
     public static final String CACHE_CODE_KEY = "cache:code:";
 
-
     public static final Integer CACHE_SCANS_COUNT = 100;
+
+    //限流器配置值
+
+    public static final String CACHE_LIMIT_SCRIPT = "script/rateLimiter.lua";
+    public static final Integer CACHE_LIMIT_TIME = 60;
+    public static final Integer CACHE_LIMIT_COUNT = 10;
+    public static final String CACHE_LIMIT_KEY = "cache:limit:";
 }
