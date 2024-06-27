@@ -4,6 +4,7 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -23,6 +24,8 @@ import com.bian.nwucommunication.util.*;
 import com.bian.nwucommunication.common.constant.OssConstants;
 import com.bian.nwucommunication.common.constant.RedisConstants;
 import com.bian.nwucommunication.common.constant.UserConstants;
+import com.github.houbb.sensitive.word.core.SensitiveWord;
+import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -102,6 +105,10 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     @Override
     public void uploadFile(FileUploadDTO fileUploadDTO,String originalFilename, InputStream fileInputStream){
         UserDTO user = UserHolder.getUser();
+
+        String sensitiveWord = SensitiveWordUtil.checkSensitiveWord(fileUploadDTO);
+        if(!StrUtil.isEmpty(sensitiveWord))
+            throw new ServiceException(sensitiveWord,BaseErrorCode.SENSITIVE_WORD_EXIST);
 
         CompletableFuture.runAsync(() ->{
             try {

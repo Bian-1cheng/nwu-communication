@@ -10,11 +10,17 @@ public enum BaseErrorCode implements IErrorCode{
     USER_NAME_EXIST_ERROR("A000111", "用户名已存在"),
     USER_NAME_SENSITIVE_ERROR("A000112", "用户名包含敏感词"),
     USER_NAME_SPECIAL_CHARACTER_ERROR("A000113", "用户名包含特殊字符"),
+
+
     EMAIL_NOT_EXIST_ERROR("A000113", "邮箱未注册"),
     EMAIL_NOT_EXIST("A000114", "邮箱不存在"),
     EMAIL_CODE_ERROR("A000115", "验证码错误"),
     PASSWORD_VERIFY_ERROR("A000120", "密码校验失败"),
     PASSWORD_SHORT_ERROR("A000121", "密码长度不够"),
+
+    SENSITIVE_WORD_EXIST("A000130", "存在敏感词汇"),
+
+
     TOO_MANY_REQUESTS("A000130", "请求次数过多，请稍后访问"),
 
     // ========== 二级宏观错误码 系统请求缺少幂等Token ==========

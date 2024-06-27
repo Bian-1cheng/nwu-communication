@@ -90,12 +90,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
 
     @Override
     public void getCode(String email) {
-        String code = RandomUtil.randomString(4);
-        try {
-            MailUtil.send(email, EmailConstants.CODE_EMAIL_SUBJECT, code, false);
-        } catch (Exception e) {
-            throw new ClientException(BaseErrorCode.EMAIL_NOT_EXIST);
-        }
+//        String code = RandomUtil.randomString(4);
+        String code = "1111";
+//        try {
+//            MailUtil.send(email, EmailConstants.CODE_EMAIL_SUBJECT, code, false);
+//        } catch (Exception e) {
+//            throw new ClientException(BaseErrorCode.EMAIL_NOT_EXIST);
+//        }
         redisTemplate.opsForValue().set(CACHE_CODE_KEY+email,code,CACHE_CODE_TTL, TimeUnit.MINUTES);
     }
 

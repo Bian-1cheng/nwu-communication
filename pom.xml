@@ -144,6 +144,13 @@
 			<version>1.21</version>
 		</dependency>
 
+		<!-- 敏感词过滤工具 -->
+		<dependency>
+			<groupId>com.github.houbb</groupId>
+			<artifactId>sensitive-word</artifactId>
+			<version>0.12.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
