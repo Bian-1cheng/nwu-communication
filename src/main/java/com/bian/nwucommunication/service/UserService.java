@@ -15,6 +15,6 @@ public interface UserService extends IService<UserInfo> {
 
     UserDTO addInfo(UserInfoDTO userInfoDTO, MultipartFile file);
 
-    String getCode(String email);
+    void getCode(String email);
 
 }

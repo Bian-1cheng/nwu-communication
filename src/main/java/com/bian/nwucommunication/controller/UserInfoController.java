@@ -97,8 +97,9 @@ public class UserInfoController {
     }
 
     @PostMapping("/code")
-    private Result<String> getCode(@RequestParam(value = "email") String email){
-        return Results.success(userService.getCode(email));
+    private Result<?> getCode(@RequestParam(value = "email") String email){
+        userService.getCode(email);
+        return Results.success("验证码获取成功");
     }
 
     @GetMapping("/test")
