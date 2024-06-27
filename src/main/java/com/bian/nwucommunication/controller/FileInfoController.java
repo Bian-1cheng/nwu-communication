@@ -74,7 +74,7 @@ public class FileInfoController {
                                         @RequestParam(value = "desc") String intro,
                                         @RequestParam(value = "file") MultipartFile file) throws IOException {
         FileUploadDTO fileUploadDTO = new FileUploadDTO(title,intro,isPublic,schoolName,keyWord);
-        fileInfoService.uploadFile(fileUploadDTO,file.getInputStream());
+        fileInfoService.uploadFile(fileUploadDTO,file.getOriginalFilename(),file.getInputStream());
         return Results.success("文件上传成功");
     }
 

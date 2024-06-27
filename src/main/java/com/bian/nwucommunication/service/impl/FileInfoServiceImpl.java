@@ -100,12 +100,12 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     }
 
     @Override
-    public void uploadFile(FileUploadDTO fileUploadDTO, InputStream fileInputStream){
+    public void uploadFile(FileUploadDTO fileUploadDTO,String originalFilename, InputStream fileInputStream){
         UserDTO user = UserHolder.getUser();
 
         CompletableFuture.runAsync(() ->{
             try {
-                String filePath = fileOperateUtil.upload(fileInputStream, OssConstants.FILE_ADDRESS);
+                String filePath = fileOperateUtil.upload(fileInputStream,originalFilename,OssConstants.FILE_ADDRESS);
                 FileInfo fileInfo = BeanUtil.toBeanIgnoreCase(fileUploadDTO, FileInfo.class, true);
                 fileInfo.setPushDate(LocalDateTimeUtil.parseDate(DateUtil.today()));
                 fileInfo.setUserId(user.getId());

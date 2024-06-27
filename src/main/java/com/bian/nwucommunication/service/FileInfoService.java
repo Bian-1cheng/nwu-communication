@@ -16,7 +16,7 @@ public interface FileInfoService extends IService<FileInfo> {
 
     List<FileInfoDTO> queryAllSchool();
 
-    void uploadFile(FileUploadDTO fileUploadDTO, InputStream fileInputStream );
+    void uploadFile(FileUploadDTO fileUploadDTO,String originalFilename, InputStream fileInputStream );
 
     List<FileInfoDTO> searchFileByKeyword(String search);
 }
