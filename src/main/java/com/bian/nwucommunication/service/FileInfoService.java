@@ -6,6 +6,7 @@ import com.bian.nwucommunication.dto.FileInfoDTO;
 import com.bian.nwucommunication.dto.FileUploadDTO;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.util.List;
 
 public interface FileInfoService extends IService<FileInfo> {
@@ -15,7 +16,7 @@ public interface FileInfoService extends IService<FileInfo> {
 
     List<FileInfoDTO> queryAllSchool();
 
-    void uploadFile(FileUploadDTO fileUploadDTO, MultipartFile file);
+    void uploadFile(FileUploadDTO fileUploadDTO, InputStream fileInputStream );
 
     List<FileInfoDTO> searchFileByKeyword(String search);
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -22,7 +23,7 @@ public class FileOperateUtil {
     @Resource
     private OSSConfig ossConfig;
 
-    public String upload(MultipartFile file, String folderPrefix) {
+    public String upload(InputStream inputStream, String folderPrefix) throws IOException {
 
         //获取相关配置
         String bucketName = ossConfig.getBucketName();
@@ -34,7 +35,7 @@ public class FileOperateUtil {
         OSS ossClient = new OSSClientBuilder().build(endPoint, accessKeyId, accessKeySecret);
 
         //获取原生文件名
-        String originalFilename = file.getOriginalFilename();
+        String originalFilename = inputStream.toString();
         //JDK8的日期格式
         LocalDateTime time = LocalDateTime.now();
         DateTimeFormatter dft = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -48,15 +49,14 @@ public class FileOperateUtil {
         String uploadFileName = folderPrefix + folder +fileName + extension;
 
         try {
-            PutObjectResult result = ossClient.putObject(bucketName, uploadFileName, file.getInputStream());
+            PutObjectResult result = ossClient.putObject(bucketName, uploadFileName, inputStream);
             //拼装返回路径
             if (result != null) {
                 return "https://"+bucketName+"."+endPoint+"/"+uploadFileName;
             }
-        } catch (IOException e) {
-            log.error("文件上传失败:{}",e.getMessage());
         } finally {
             //OSS关闭服务，不然会造成OOM
+            inputStream.close();
             ossClient.shutdown();
         }
         return null;

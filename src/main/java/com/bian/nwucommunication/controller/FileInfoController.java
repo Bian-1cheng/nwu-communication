@@ -23,6 +23,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -71,9 +72,9 @@ public class FileInfoController {
                                         @RequestParam(value = "isPublic") Boolean isPublic,
                                         @RequestParam(value = "school_name") String schoolName,
                                         @RequestParam(value = "desc") String intro,
-                                        @RequestParam(value = "file") MultipartFile file){
+                                        @RequestParam(value = "file") MultipartFile file) throws IOException {
         FileUploadDTO fileUploadDTO = new FileUploadDTO(title,intro,isPublic,schoolName,keyWord);
-        fileInfoService.uploadFile(fileUploadDTO,file);
+        fileInfoService.uploadFile(fileUploadDTO,file.getInputStream());
         return Results.success("文件上传成功");
     }
 
