@@ -17,6 +17,7 @@ import com.bian.nwucommunication.dto.resp.FileInfoDetailRespDTO;
 import com.bian.nwucommunication.mapper.FileInfoMapper;
 import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.service.UserService;
+import com.bian.nwucommunication.util.FileUtil;
 import com.bian.nwucommunication.util.UserHolder;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
@@ -74,6 +75,8 @@ public class FileInfoController {
                                         @RequestParam(value = "desc") String intro,
                                         @RequestParam(value = "file") MultipartFile file) throws IOException {
         FileUploadDTO fileUploadDTO = new FileUploadDTO(title,intro,isPublic,schoolName,keyWord);
+        if(!FileUtil.isValidFileType(file.getOriginalFilename()))
+            throw new ServiceException(BaseErrorCode.FILE_TYPE_ERROR);
         fileInfoService.uploadFile(fileUploadDTO,file.getOriginalFilename(),file.getInputStream());
         return Results.success("文件上传成功");
     }

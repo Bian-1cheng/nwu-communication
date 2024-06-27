@@ -1,32 +1,26 @@
 package com.bian.nwucommunication.util;
 
+import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.lang.UUID;
-import com.aliyun.oss.ClientBuilderConfiguration;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.PutObjectResult;
+import com.bian.nwucommunication.common.constant.UserConstants;
 import com.bian.nwucommunication.config.OSSConfig;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
-import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.Arrays;
 
 @Slf4j
 @Service
-public class FileOperateUtil {
+public class FileUtil {
 
     @Resource
     private OSSConfig ossConfig;
@@ -88,6 +82,11 @@ public class FileOperateUtil {
 //        }
 //
 //    }
+
+    public static boolean isValidFileType(String fileName) {
+        String fileExtension = FileNameUtil.extName(fileName).toLowerCase();
+        return Arrays.stream(UserConstants.ALLOW_TYPE).anyMatch(type -> type.equals(fileExtension));
+    }
 
     /**
      * 获取随机字符串

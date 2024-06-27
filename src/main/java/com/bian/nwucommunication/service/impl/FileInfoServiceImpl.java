@@ -24,16 +24,11 @@ import com.bian.nwucommunication.util.*;
 import com.bian.nwucommunication.common.constant.OssConstants;
 import com.bian.nwucommunication.common.constant.RedisConstants;
 import com.bian.nwucommunication.common.constant.UserConstants;
-import com.github.houbb.sensitive.word.core.SensitiveWord;
-import com.github.houbb.sensitive.word.core.SensitiveWordHelper;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +47,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
     private RedisTemplate redisTemplate;
     
     @Resource
-    private FileOperateUtil fileOperateUtil;
+    private FileUtil fileUtil;
 
     @Resource
     private RequirementService requirementService;
@@ -109,10 +104,9 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
         String sensitiveWord = SensitiveWordUtil.checkSensitiveWord(fileUploadDTO);
         if(!StrUtil.isEmpty(sensitiveWord))
             throw new ServiceException(sensitiveWord,BaseErrorCode.SENSITIVE_WORD_EXIST);
-
         CompletableFuture.runAsync(() ->{
             try {
-                String filePath = fileOperateUtil.upload(fileInputStream,originalFilename,OssConstants.FILE_ADDRESS);
+                String filePath = fileUtil.upload(fileInputStream,originalFilename,OssConstants.FILE_ADDRESS);
                 FileInfo fileInfo = BeanUtil.toBeanIgnoreCase(fileUploadDTO, FileInfo.class, true);
                 fileInfo.setPushDate(LocalDateTimeUtil.parseDate(DateUtil.today()));
                 fileInfo.setUserId(user.getId());

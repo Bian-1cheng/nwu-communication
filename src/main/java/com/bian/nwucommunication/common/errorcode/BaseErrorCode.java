@@ -19,6 +19,7 @@ public enum BaseErrorCode implements IErrorCode{
     PASSWORD_SHORT_ERROR("A000121", "密码长度不够"),
 
     SENSITIVE_WORD_EXIST("A000130", "存在敏感词汇"),
+    FILE_TYPE_ERROR("A000131", "文件格式不允许上传"),
 
 
     TOO_MANY_REQUESTS("A000130", "请求次数过多，请稍后访问"),

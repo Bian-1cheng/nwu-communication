@@ -1,12 +1,9 @@
 package com.bian.nwucommunication.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.extra.mail.MailUtil;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bian.nwucommunication.common.constant.EmailConstants;
 import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
 import com.bian.nwucommunication.common.execption.ClientException;
 import com.bian.nwucommunication.common.constant.SchoolEnum;
@@ -30,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
 import static com.bian.nwucommunication.common.constant.RedisConstants.*;
@@ -46,7 +42,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     private RedisTemplate<String, Object> redisTemplate;
 
     @Resource
-    private FileOperateUtil fileOperateUtil;
+    private FileUtil fileUtil;
 
     @Override
     public UserDTO login(UserLoginReqDTO userLoginDTO) {
@@ -73,7 +69,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
             throw new ClientException(BaseErrorCode.USER_NAME_EXIST_ERROR);
         int schoolId = SchoolEnum.getCodeByName(userInfoDTO.getSchoolName());
         try {
-            String headImg = fileOperateUtil.upload(file.getInputStream(),file.getName(), OssConstants.USER_HEAD_IMG);
+            String headImg = fileUtil.upload(file.getInputStream(),file.getName(), OssConstants.USER_HEAD_IMG);
             UserInfo userInfo = BeanUtil.toBean(userInfoDTO, UserInfo.class);
             userInfo.setSchoolId(schoolId);
             userInfo.setHeadImg(headImg);
