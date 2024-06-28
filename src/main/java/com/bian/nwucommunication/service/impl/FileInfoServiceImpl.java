@@ -66,7 +66,6 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
         UserDTO user = UserHolder.getUser();
         LambdaQueryWrapper<FileInfo> queryWrapper = Wrappers.lambdaQuery(FileInfo.class)
                 .eq(FileInfo::getSchoolId, user.getSchoolId())
-                .eq(FileInfo::getIsPass, UserConstants.FILE_HAVE_PASS)
                 .orderByDesc(FileInfo::getPushDate);
         List<FileInfo> fileList = fileInfoMapper.selectList(queryWrapper);
         if (CollUtil.isEmpty(fileList))
