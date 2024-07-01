@@ -86,14 +86,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
             }
             return fileListDTO;
         }
-        List<FileInfo> fileList = fileInfoMapper.selectList(
-                new QueryWrapper<FileInfo>()
-                        .eq("is_pass", UserConstants.FILE_HAVE_PASS)
-                        .orderByDesc("push_date"));
-        for (FileInfo item : fileList) {
-            redisTemplate.opsForValue().set(RedisConstants.CACHE_All_School_KEY+item.getId()+":",JSONUtil.toJsonStr(item));
-        }
-        return BeanUtil.copyToList(fileList, FileInfoDTO.class);
+        return updateRedisSchoolFile();
     }
 
     @Override
@@ -134,5 +127,19 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
         }
 
         return BeanUtil.copyToList(fileInfo, FileInfoDTO.class);
+    }
+
+
+    @Override
+    public List<FileInfoDTO> updateRedisSchoolFile() {
+        List<FileInfo> fileList = fileInfoMapper.selectList(
+                new QueryWrapper<FileInfo>()
+                        .eq("is_pass", UserConstants.FILE_HAVE_PASS)
+                        .orderByDesc("push_date"));
+        List<FileInfoDTO> fileInfoDTOS = BeanUtil.copyToList(fileList, FileInfoDTO.class);
+        for (FileInfoDTO item : fileInfoDTOS) {
+            redisTemplate.opsForValue().set(RedisConstants.CACHE_All_School_KEY+item.getId()+":",JSONUtil.toJsonStr(item));
+        }
+        return fileInfoDTOS;
     }
 }

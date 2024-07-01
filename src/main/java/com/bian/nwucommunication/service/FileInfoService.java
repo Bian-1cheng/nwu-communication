@@ -19,4 +19,6 @@ public interface FileInfoService extends IService<FileInfo> {
     void uploadFile(FileUploadDTO fileUploadDTO,String originalFilename, InputStream fileInputStream );
 
     List<FileInfoDTO> searchFileByKeyword(String search);
+
+    List<FileInfoDTO> updateRedisSchoolFile();
 }
