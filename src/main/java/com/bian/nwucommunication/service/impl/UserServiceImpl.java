@@ -67,9 +67,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
             throw new ClientException(BaseErrorCode.EMAIL_CODE_ERROR);
         if(checkUser(userInfoDTO.getEmail()) != null)
             throw new ClientException(BaseErrorCode.USER_NAME_EXIST_ERROR);
+        if(file == null)
+            throw new ClientException(BaseErrorCode.FILE_EMPTY_ERROR);
         int schoolId = SchoolEnum.getCodeByName(userInfoDTO.getSchoolName());
         try {
-            String headImg = fileUtil.upload(file.getInputStream(),file.getName(), OssConstants.USER_HEAD_IMG);
+            String headImg = fileUtil.upload(file.getInputStream(),file.getOriginalFilename(), OssConstants.USER_HEAD_IMG);
             UserInfo userInfo = BeanUtil.toBean(userInfoDTO, UserInfo.class);
             userInfo.setSchoolId(schoolId);
             userInfo.setHeadImg(headImg);

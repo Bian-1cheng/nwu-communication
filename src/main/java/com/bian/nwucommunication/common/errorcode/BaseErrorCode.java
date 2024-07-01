@@ -20,6 +20,7 @@ public enum BaseErrorCode implements IErrorCode{
 
     SENSITIVE_WORD_EXIST("A000130", "存在敏感词汇"),
     FILE_TYPE_ERROR("A000131", "文件格式不允许上传"),
+    FILE_EMPTY_ERROR("A000131", "文件为空"),
 
 
     TOO_MANY_REQUESTS("A000130", "请求次数过多，请稍后访问"),

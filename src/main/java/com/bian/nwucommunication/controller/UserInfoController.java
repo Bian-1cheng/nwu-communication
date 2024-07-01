@@ -61,7 +61,7 @@ public class UserInfoController {
                                         @RequestParam(value = "file") MultipartFile file){
         UserInfoDTO userInfoDTO = new UserInfoDTO(nickName, schoolName, email, identification,null, null,code);
         UserDTO userDTO = userService.addInfo(userInfoDTO,file);
-        return Results.success(userDTO);
+        return Results.success(userDTO,"注册成功");
     }
 
 
