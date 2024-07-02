@@ -19,7 +19,7 @@ import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.service.NoticeService;
 import com.bian.nwucommunication.service.RequirementService;
 import com.bian.nwucommunication.common.constant.UserConstants;
-import com.bian.nwucommunication.util.RedisUtil;
+import com.bian.nwucommunication.util.redis.RedisUtil;
 import com.bian.nwucommunication.util.redis.MessageProducer;
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.RedisTemplate;

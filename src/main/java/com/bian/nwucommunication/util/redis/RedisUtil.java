@@ -1,4 +1,4 @@
-package com.bian.nwucommunication.util;
+package com.bian.nwucommunication.util.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
