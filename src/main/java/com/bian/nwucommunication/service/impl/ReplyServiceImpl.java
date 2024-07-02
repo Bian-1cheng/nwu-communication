@@ -4,10 +4,15 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bian.nwucommunication.common.constant.UserConstants;
 import com.bian.nwucommunication.dao.Comment;
+import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dao.Reply;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.CommentDTO;
@@ -56,8 +61,9 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyMapper, Reply> implements
         reply.setCommentId(comment.getId());
         reply.setFormUserId(UserHolder.getUser().getId());
         if (replyReqDTO.getToUserNickName() != null && replyReqDTO.getToUserHeadImg() != null){
-            UserInfo userInfo = userService.getBaseMapper().selectOne(new QueryWrapper<UserInfo>()
-                    .eq("nick_name", replyReqDTO.getToUserNickName()));
+            LambdaQueryWrapper<UserInfo> queryWrapper = Wrappers.lambdaQuery(UserInfo.class)
+                    .eq(UserInfo::getNickName, replyReqDTO.getToUserNickName());
+            UserInfo userInfo = userService.getBaseMapper().selectOne(queryWrapper);
             reply.setToUserId(userInfo.getId());
         }else{
             reply.setToUserId(comment.getUserId());

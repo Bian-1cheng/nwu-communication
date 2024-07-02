@@ -2,7 +2,8 @@ package com.bian.nwucommunication.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
 import com.bian.nwucommunication.common.execption.ClientException;
@@ -104,8 +105,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     }
 
     private UserInfo checkUser(String email){
-        QueryWrapper queryWrapper = new QueryWrapper<UserInfo>();
-        queryWrapper.eq("email",email);
+        LambdaQueryWrapper<UserInfo> queryWrapper = Wrappers.lambdaQuery(UserInfo.class)
+                .eq(UserInfo::getEmail, email);
         UserInfo userInfo = userMapper.selectOne(queryWrapper);
         return userInfo;
     }

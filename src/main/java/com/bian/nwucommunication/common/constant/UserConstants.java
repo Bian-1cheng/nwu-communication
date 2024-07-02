@@ -12,6 +12,9 @@ public class UserConstants {
     public static final Integer FILE_HAVE_PASS = 1;
     public static final Integer FILE_NOT_PASS = 3;
 
+    public static final Integer FILE_INIT_GREAT_NUM = 0;
+
+
     // 消息中心
     public static final Integer is_NOTICE = 1;//已通知
     public static final Integer NOT_NOTICE = 0;// 未通知

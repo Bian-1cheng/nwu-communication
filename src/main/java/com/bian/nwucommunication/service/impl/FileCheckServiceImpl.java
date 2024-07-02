@@ -66,7 +66,6 @@ public class FileCheckServiceImpl  extends ServiceImpl<FileInfoMapper, FileInfo>
             throw new ClientException("文件不存在");
         fileInfoMapper.updateById(fileInfo.setIsPass(checkFileReqDTO.getNewStatus()));
         if(Objects.equals(checkFileReqDTO.getNewStatus(), UserConstants.FILE_HAVE_PASS)){
-            // TODO 加入事务确保邮件与数据库同时成功
             List<RequirementRespDTO> requirementList = requirementService.searchRequirementByKeyWord(fileInfo.getKeyWord());
             for(RequirementRespDTO item : requirementList){
                 messageProducer.sendMessage(RedisConstants.REDIS_STREAM_NAME,item.getEmail(),item.getKeyWord(),item.getId());

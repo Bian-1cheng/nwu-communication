@@ -4,7 +4,10 @@ package com.bian.nwucommunication.controller;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.bian.nwucommunication.common.result.Result;
 import com.bian.nwucommunication.common.result.Results;
 
@@ -30,6 +33,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+import static com.baomidou.mybatisplus.extension.toolkit.Db.lambdaQuery;
 
 
 @RestController
@@ -75,9 +80,10 @@ public class UserInfoController {
     @GetMapping("/message")
     private Result<?> getMessage(){
         UserDTO user = UserHolder.getUser();
-        List<Notice> notices = noticeMapper.selectList(new QueryWrapper<Notice>()
-                .eq("user_id", user.getId())
-                .eq("is_notice", UserConstants.NOT_NOTICE));
+        LambdaQueryWrapper<Notice> queryWrapper = Wrappers.lambdaQuery(Notice.class)
+                .eq(Notice::getUserId, user.getId())
+                .eq(Notice::getIsNotice, UserConstants.NOT_NOTICE);
+        List<Notice> notices = noticeMapper.selectList(queryWrapper);
         if(CollUtil.isEmpty(notices))
             return Results.success("没有新消息");
         return Results.success(notices);
@@ -86,7 +92,9 @@ public class UserInfoController {
     @GetMapping("/fileuser/{id}")
     private Result<?> getFileUser(@PathVariable("id") long id){
         FileInfo fileInfo = fileInfoService.getById(id);
-        UserInfo userInfo = userMapper.selectOne(new QueryWrapper<UserInfo>().eq("id", fileInfo.getUserId()));
+        LambdaQueryWrapper<UserInfo> queryWrapper = Wrappers.lambdaQuery(UserInfo.class)
+                .eq(UserInfo::getId, fileInfo.getUserId());
+        UserInfo userInfo = userMapper.selectOne(queryWrapper);
         UserDTO userDTO = BeanUtil.toBean(userInfo, UserDTO.class);
         return Results.success(userDTO);
     }
