@@ -8,6 +8,7 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 public class RequirementRespDTO {
+    private Integer id;
 
     private LocalDate date;
 

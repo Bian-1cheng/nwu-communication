@@ -20,6 +20,7 @@ import com.bian.nwucommunication.service.NoticeService;
 import com.bian.nwucommunication.service.RequirementService;
 import com.bian.nwucommunication.common.constant.UserConstants;
 import com.bian.nwucommunication.util.RedisUtil;
+import com.bian.nwucommunication.util.redis.MessageProducer;
 import jakarta.annotation.Resource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -46,6 +47,9 @@ public class FileCheckServiceImpl  extends ServiceImpl<FileInfoMapper, FileInfo>
     @Resource
     private RedisTemplate redisTemplate;
 
+    @Resource
+    private MessageProducer messageProducer;
+
     @Override
     public List<FileInfoDTO> queryAllFilePage(int currentPage, int pageSize) {
         Page<FileInfo> page = new Page<>(currentPage, pageSize);
@@ -63,12 +67,9 @@ public class FileCheckServiceImpl  extends ServiceImpl<FileInfoMapper, FileInfo>
         fileInfoMapper.updateById(fileInfo.setIsPass(checkFileReqDTO.getNewStatus()));
         if(Objects.equals(checkFileReqDTO.getNewStatus(), UserConstants.FILE_HAVE_PASS)){
             // TODO 加入事务确保邮件与数据库同时成功
-//        List<RequirementRespDTO> requirementList = requirementService.searchRequirementByKeyWord(fileInfo.getKeyWord());
             List<RequirementRespDTO> requirementList = requirementService.searchRequirementByKeyWord(fileInfo.getKeyWord());
             for(RequirementRespDTO item : requirementList){
-                // 向有需求的人发送邮件
-                // TODO 消息队列优化
-//                MailUtil.send(item.getEmail(), EmailConstants.CODE_EMAIL_NAME, item.getKeyWord(), false);
+                messageProducer.sendMessage(RedisConstants.REDIS_STREAM_NAME,item.getEmail(),item.getKeyWord(),item.getId());
                 Notice notice = Notice.builder()
                         .isNotice(UserConstants.NOT_NOTICE)
                         .fileId(fileInfo.getId())
@@ -83,6 +84,8 @@ public class FileCheckServiceImpl  extends ServiceImpl<FileInfoMapper, FileInfo>
         Set keys = new RedisUtil().scanKeys(redisTemplate, RedisConstants.CACHE_All_School_KEY, RedisConstants.CACHE_SCANS_COUNT);
         redisTemplate.delete(keys);
         fileInfoService.updateRedisSchoolFile();
+
+
 
     }
 

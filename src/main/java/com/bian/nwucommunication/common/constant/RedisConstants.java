@@ -21,4 +21,9 @@ public class RedisConstants {
     public static final Integer CACHE_LIMIT_TIME = 60;
     public static final Integer CACHE_LIMIT_COUNT = 10;
     public static final String CACHE_LIMIT_KEY = "cache:limit:";
+
+    //消息队列配置值
+    public static final String REDIS_STREAM_NAME = "nwu";
+    public static final String REDIS_STREAM_CONSUME_NAME = "c1";
+    public static final String REDIS_STREAM_CONSUME_GROUP = "g1";
 }

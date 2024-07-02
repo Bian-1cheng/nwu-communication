@@ -3,6 +3,7 @@
 <mapper namespace="com.bian.nwucommunication.mapper.RequirementMapper">
 
     <resultMap id="RequirementResultMap" type="com.bian.nwucommunication.dto.resp.RequirementRespDTO">
+        <result column="id" property="id" />
         <result column="date" property="date" />
         <result column="key_word" property="keyWord" />
         <result column="user_id" property="userId" />
@@ -12,7 +13,7 @@
 
     <select id="searchRequirementByKeyWord" resultMap="RequirementResultMap" parameterType="java.lang.String">
         SELECT
-            v.`date`, v.`key_word`,v.`user_id`,
+            v.`id`,v.`date`, v.`key_word`,v.`user_id`,
             sv1.`nick_name` AS to_user_nick_name,
             sv1.`email` AS to_user_email
         FROM fsahre_requirement v
