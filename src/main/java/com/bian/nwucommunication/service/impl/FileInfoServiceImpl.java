@@ -128,7 +128,6 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
             requirementService.insertRequirement(requirementDTO);
             throw new ServiceException(BaseErrorCode.FILE_LIST_EMPTY);
         }
-
         return BeanUtil.copyToList(fileInfo, FileInfoDTO.class);
     }
 

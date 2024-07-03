@@ -3,7 +3,9 @@ package com.bian.nwucommunication.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bian.nwucommunication.common.constant.RedisConstants;
@@ -22,6 +24,7 @@ import com.bian.nwucommunication.common.constant.UserConstants;
 import com.bian.nwucommunication.util.redis.RedisUtil;
 import com.bian.nwucommunication.util.redis.MessageProducer;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +33,7 @@ import java.util.Objects;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class FileCheckServiceImpl  extends ServiceImpl<FileInfoMapper, FileInfo> implements FileCheckService {
 
     @Resource
@@ -53,17 +57,21 @@ public class FileCheckServiceImpl  extends ServiceImpl<FileInfoMapper, FileInfo>
     @Override
     public List<FileInfoDTO> queryAllFilePage(int currentPage, int pageSize) {
         Page<FileInfo> page = new Page<>(currentPage, pageSize);
-        QueryWrapper queryWrapper = new QueryWrapper<FileInfo>();
-        queryWrapper.orderByDesc("push_date");
+        LambdaQueryWrapper<FileInfo> queryWrapper = Wrappers.lambdaQuery(FileInfo.class)
+                .orderByDesc(FileInfo::getPushDate);
         Page<FileInfo> fileInfoPage = fileInfoMapper.selectPage(page, queryWrapper);
         return BeanUtil.copyToList(fileInfoPage.getRecords(), FileInfoDTO.class);
     }
 
     @Override
     public void checkFile(CheckFileReqDTO checkFileReqDTO) {
-        FileInfo fileInfo = fileInfoMapper.selectById(checkFileReqDTO.getFileId());
-        if(fileInfo == null)
+        FileInfo fileInfo = null;
+        try {
+            fileInfo = fileInfoMapper.selectById(checkFileReqDTO.getFileId());
+        } catch (Exception e) {
+            log.error("文件不存在{}",e.getMessage());
             throw new ClientException("文件不存在");
+        }
         fileInfoMapper.updateById(fileInfo.setIsPass(checkFileReqDTO.getNewStatus()));
         if(Objects.equals(checkFileReqDTO.getNewStatus(), UserConstants.FILE_HAVE_PASS)){
             List<RequirementRespDTO> requirementList = requirementService.searchRequirementByKeyWord(fileInfo.getKeyWord());

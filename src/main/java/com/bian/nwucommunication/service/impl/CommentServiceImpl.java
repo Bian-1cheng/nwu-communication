@@ -22,6 +22,7 @@ import com.bian.nwucommunication.service.ReplyService;
 import com.bian.nwucommunication.service.UserService;
 import com.bian.nwucommunication.util.UserHolder;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,6 +30,7 @@ import java.util.List;
 
 
 @Service
+@Slf4j
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
 
     @Resource
@@ -75,6 +77,7 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         try {
             commentMapper.insert(comment);
         } catch (Exception e) {
+            log.error("发表评论失败{}",e.getMessage());
             throw new ClientException("评论失败");
         }
         CommentDTO commentDTO = BeanUtil.toBean(comment, CommentDTO.class);

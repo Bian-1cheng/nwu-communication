@@ -25,11 +25,13 @@ import com.bian.nwucommunication.service.ReplyService;
 import com.bian.nwucommunication.service.UserService;
 import com.bian.nwucommunication.util.UserHolder;
 import jakarta.annotation.Resource;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@Slf4j
 public class ReplyServiceImpl extends ServiceImpl<ReplyMapper, Reply> implements ReplyService {
 
     @Resource
@@ -73,6 +75,7 @@ public class ReplyServiceImpl extends ServiceImpl<ReplyMapper, Reply> implements
         try {
             id = replyMapper.insert(reply);
         } catch (Exception e) {
+            log.error("插入失败{}",e.getMessage());
             throw new RuntimeException(e);
         }
         ReplyDTO replyDTO = BeanUtil.toBean(reply, ReplyDTO.class);
