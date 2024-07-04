@@ -28,6 +28,7 @@ import com.bian.nwucommunication.util.UserHolder;
 import com.bian.nwucommunication.common.constant.UserConstants;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -38,6 +39,7 @@ import static com.baomidou.mybatisplus.extension.toolkit.Db.lambdaQuery;
 
 
 @RestController
+@Slf4j
 @RequestMapping("/fs")
 public class UserInfoController {
 
