@@ -5,6 +5,7 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.bian.nwucommunication.common.constant.UserConstants;
 import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
 import com.bian.nwucommunication.common.execption.ClientException;
 import com.bian.nwucommunication.common.constant.SchoolEnum;
@@ -27,10 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.*;
+import java.util.Arrays;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import static com.bian.nwucommunication.common.constant.RedisConstants.*;
+import static com.bian.nwucommunication.util.FileUtil.modifyResolution;
 
 @Service
 @Slf4j
@@ -70,9 +74,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
             throw new ClientException(BaseErrorCode.USER_NAME_EXIST_ERROR);
         if(file == null)
             throw new ClientException(BaseErrorCode.FILE_EMPTY_ERROR);
+        if(!checkUserHeadImgType(file))
+            throw new ClientException(BaseErrorCode.FILE_TYPE_ERROR);
         int schoolId = SchoolEnum.getCodeByName(userInfoDTO.getSchoolName());
         try {
-            String headImg = fileUtil.upload(file.getInputStream(),file.getOriginalFilename(), OssConstants.USER_HEAD_IMG);
+            String headImg = null;
+            try {
+                String modifiedPath = modifyResolution(
+                        file, UserConstants.FILE_Resolution_PATH,
+                        UserConstants.FILE_Resolution_WIDTH,
+                        UserConstants.FILE_Resolution_HEIGHT);
+                headImg = fileUtil.upload(
+                        new FileInputStream(new File(modifiedPath)),
+                        file.getOriginalFilename(),
+                        OssConstants.USER_HEAD_IMG);
+            } catch (Exception e) {
+                log.error("压缩图片或上传图片失败{}",e.getMessage());
+                throw new ClientException(BaseErrorCode.FILE_RESOLUTION_ERROR);
+            }
             UserInfo userInfo = BeanUtil.toBean(userInfoDTO, UserInfo.class);
             userInfo.setSchoolId(schoolId);
             userInfo.setHeadImg(headImg);
@@ -80,10 +99,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
             userInfoDTO.setHeadImg(headImg);
             userMapper.insert(userInfo);
         } catch (Exception e) {
-            log.error("插入用户信息失败{}",e.getMessage());
-            throw new ServiceException(BaseErrorCode.SERVICE_ERROR);
+            log.error("插入用户信息失败{}",e);
+            throw new ServiceException(BaseErrorCode.SERVICE_File_ERROR);
         }
-
         return login(new UserLoginReqDTO( userInfoDTO.getCode(),userInfoDTO.getEmail()));
     }
 
@@ -109,6 +127,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
                 .eq(UserInfo::getEmail, email);
         UserInfo userInfo = userMapper.selectOne(queryWrapper);
         return userInfo;
+    }
+
+    private Boolean checkUserHeadImgType(MultipartFile file){
+        String fileType = FileUtil.getFileType(file);
+        return Arrays.stream(UserConstants.ALLOW_HEAD_IMG_TYPE).anyMatch(type -> type.equals(fileType));
     }
 
 }

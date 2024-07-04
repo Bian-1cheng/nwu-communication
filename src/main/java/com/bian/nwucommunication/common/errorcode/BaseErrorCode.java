@@ -21,6 +21,7 @@ public enum BaseErrorCode implements IErrorCode{
     SENSITIVE_WORD_EXIST("A000130", "存在敏感词汇"),
     FILE_TYPE_ERROR("A000131", "文件格式不允许上传"),
     FILE_EMPTY_ERROR("A000131", "文件为空"),
+    FILE_RESOLUTION_ERROR("A000132", "文件降低分辨率错误"),
 
 
     TOO_MANY_REQUESTS("A000130", "请求次数过多，请稍后访问"),
@@ -33,6 +34,7 @@ public enum BaseErrorCode implements IErrorCode{
     SERVICE_ERROR("B000001", "系统执行出错"),
     // ========== 二级宏观错误码 系统执行超时 ==========
     SERVICE_TIMEOUT_ERROR("B000100", "系统执行超时"),
+    SERVICE_File_ERROR("B000101", "文件处理异常"),
 
     // ========== 一级宏观错误码 调用第三方服务出错 ==========
     REMOTE_ERROR("C000001", "调用第三方服务出错"),
