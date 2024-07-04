@@ -2,6 +2,7 @@ package com.bian.nwucommunication.util;
 
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.lang.UUID;
+import cn.hutool.core.util.IdUtil;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.PutObjectResult;
@@ -9,14 +10,23 @@ import com.bian.nwucommunication.common.constant.UserConstants;
 import com.bian.nwucommunication.config.OSSConfig;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
+import org.bytedeco.javacpp.Loader;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -62,27 +72,6 @@ public class FileUtil {
         return null;
     }
 
-//    private void fileToZip(InputStream inputStream){
-//        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-//        try (ZipOutputStream zipOut = new ZipOutputStream(byteArrayOutputStream)) {
-//
-//            ZipEntry zipEntry = new ZipEntry("compressed.dat"); // 可以指定压缩后的文件名
-//            zipOut.putNextEntry(zipEntry);
-//
-//            byte[] buffer = new byte[1024];
-//            int len;
-//            while ((len = inputStream.read(buffer)) > 0) {
-//                zipOut.write(buffer, 0, len);
-//            }
-//
-//            zipOut.closeEntry();
-//            // 完成所有条目的写入后，流会自动刷新和关闭
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//
-//    }
-
     public static boolean isValidFileType(String fileName) {
         String fileExtension = FileNameUtil.extName(fileName).toLowerCase();
         return Arrays.stream(UserConstants.ALLOW_TYPE).anyMatch(type -> type.equals(fileExtension));
@@ -95,4 +84,52 @@ public class FileUtil {
     private String generateUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "").substring(0, 32);
     }
+
+    public static String getFileType(MultipartFile file){
+        return Objects.requireNonNull(FileNameUtil.extName(file.getOriginalFilename())).toLowerCase();
+    }
+
+    public static String modifyResolution(
+            MultipartFile multipartFile, String outputDir, Integer width, Integer height) throws Exception {
+        // 检查文件类型
+        String fileName = multipartFile.getOriginalFilename();
+        String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
+        if (!Arrays.asList("jpg", "jpeg", "png").contains(ext)) {
+            throw new Exception("不支持该格式 " + ext);
+        }
+
+        // 创建一个临时文件来保存上传的图像
+        Path tempFile = Files.createTempFile("temp-image-", "." + ext);
+        File tempFileFile = tempFile.toFile();
+
+        // 将MultipartFile的内容写入临时文件
+        try (InputStream inputStream = multipartFile.getInputStream()) {
+            FileUtils.copyInputStreamToFile(inputStream, tempFileFile);
+        }
+
+        // 构建输出文件路径
+        String resultPath = Paths.get(outputDir, IdUtil.simpleUUID() + "." + ext).toString();
+
+        // 加载FFmpeg并执行命令
+        String ffmpeg = Loader.load(org.bytedeco.ffmpeg.ffmpeg.class); // 注意：这里假设Loader和ffmpeg类是正确的
+        ProcessBuilder builder = new ProcessBuilder(
+                ffmpeg,
+                "-i",
+                tempFileFile.getAbsolutePath(),
+                "-vf",
+                MessageFormat.format("scale={0}:{1}", width, height),
+                resultPath
+        );
+
+        Process process = builder.inheritIO().start();
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+            log.error("降低分辨率失败");
+            throw new IOException("FFmpeg 执行失败 process exited with code " + exitCode);
+        }
+         tempFileFile.delete();
+
+        return resultPath;
+    }
+
 }
