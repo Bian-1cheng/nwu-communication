@@ -84,10 +84,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
                         file, UserConstants.FILE_Resolution_PATH,
                         UserConstants.FILE_Resolution_WIDTH,
                         UserConstants.FILE_Resolution_HEIGHT);
+                File localFile = new File(modifiedPath);
                 headImg = fileUtil.upload(
-                        new FileInputStream(new File(modifiedPath)),
+                        new FileInputStream(localFile),
                         file.getOriginalFilename(),
                         OssConstants.USER_HEAD_IMG);
+                localFile.delete();
             } catch (Exception e) {
                 log.error("压缩图片或上传图片失败{}",e.getMessage());
                 throw new ClientException(BaseErrorCode.FILE_RESOLUTION_ERROR);
