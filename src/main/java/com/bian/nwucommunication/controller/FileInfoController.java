@@ -90,10 +90,9 @@ public class FileInfoController {
     @GetMapping("/filedetail/{id}")
     private Result<?> queryFileDetailById(@PathVariable("id") long id){
         FileInfo fileInfo = fileInfoService.getById(id);
-        if(fileInfo != null)
-            return Results.success(BeanUtil.toBean(fileInfo, FileInfoDetailRespDTO.class));
-        else
+        if(fileInfo == null)
             throw new ServiceException("没有该文件");
+        return Results.success(BeanUtil.toBean(fileInfo, FileInfoDetailRespDTO.class));
     }
 
 }
