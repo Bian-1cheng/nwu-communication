@@ -94,5 +94,4 @@ public class FileInfoController {
             throw new ServiceException("没有该文件");
         return Results.success(BeanUtil.toBean(fileInfo, FileInfoDetailRespDTO.class));
     }
-
 }

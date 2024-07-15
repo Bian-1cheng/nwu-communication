@@ -1,5 +1,7 @@
 package com.bian.nwucommunication.util.redis;
 
+import cn.hutool.extra.mail.MailUtil;
+import com.bian.nwucommunication.common.constant.EmailConstants;
 import com.bian.nwucommunication.common.constant.RedisConstants;
 import com.bian.nwucommunication.common.constant.UserConstants;
 
@@ -7,6 +9,7 @@ import com.bian.nwucommunication.common.constant.UserConstants;
 import com.bian.nwucommunication.dao.Requirement;
 import com.bian.nwucommunication.dto.RequirementDTO;
 import com.bian.nwucommunication.mapper.RequirementMapper;
+import com.bian.nwucommunication.service.impl.EmailService;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.connection.stream.*;
@@ -29,6 +32,9 @@ public class MessageConsumer implements StreamListener<String, ObjectRecord<Stri
     @Resource
     private RequirementMapper requirementMapper;
 
+    @Resource
+    private EmailService emailService;
+
     @Override
     public void onMessage(ObjectRecord<String, String> message) {
         StreamOperations<String, String, String> streamOperations = redisTemplate.opsForStream();
@@ -45,6 +51,7 @@ public class MessageConsumer implements StreamListener<String, ObjectRecord<Stri
 
         try {
 //            MailUtil.send(requirementDTO.getEmail(), EmailConstants.CODE_EMAIL_NAME, requirementDTO.getKeyWord(), false);
+            emailService.sendRequirement(requirementDTO.getEmail(),requirementDTO.getKeyWord());
             Requirement requirement = requirementMapper.selectById(Integer.parseInt(split[2]));
             requirement.setIsNotice(UserConstants.is_NOTICE);
             requirementMapper.updateById(requirement);

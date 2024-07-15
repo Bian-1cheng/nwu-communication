@@ -49,6 +49,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     @Resource
     private FileUtil fileUtil;
 
+    @Resource
+    private EmailService emailService;
+
     @Override
     public UserDTO login(UserLoginReqDTO userLoginDTO) {
         Boolean isRight = checkCode(userLoginDTO.getEmail(), userLoginDTO.getCode());
@@ -111,11 +114,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
     public void getCode(String email) {
 //        String code = RandomUtil.randomString(4);
         String code = "1111";
-//        try {
-//            MailUtil.send(email, EmailConstants.CODE_EMAIL_SUBJECT, code, false);
-//        } catch (Exception e) {
-//            throw new ClientException(BaseErrorCode.EMAIL_NOT_EXIST);
-//        }
+//        emailService.sendCode(email,code);
         redisTemplate.opsForValue().set(CACHE_CODE_KEY+email,code,CACHE_CODE_TTL, TimeUnit.MINUTES);
     }
 
