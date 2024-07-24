@@ -12,4 +12,7 @@ public class EmailConstants {
     public static final String Require_EMAIL_TEMPLATE = "requirementTemplate";
     public static final String Require_EMAIL_PRE = "keyWord";
     public static final String Require_EMAIL_SUBJECT = "FShare";
+
+    // 警告文件
+    public static final String ILLEGAL_EMAIL_TEMPLATE = "illegalFileTemplate";
 }
