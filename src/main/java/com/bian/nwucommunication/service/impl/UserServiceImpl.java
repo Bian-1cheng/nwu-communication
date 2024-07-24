@@ -132,7 +132,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
 
     private Boolean checkUserHeadImgType(MultipartFile file){
         String fileType = FileUtil.getFileType(file);
-        return Arrays.stream(UserConstants.ALLOW_HEAD_IMG_TYPE).anyMatch(type -> type.equals(fileType));
+        return Arrays.stream(OssConstants.ALLOW_HEAD_IMG_TYPE).anyMatch(type -> type.equals(fileType));
     }
 
 }
