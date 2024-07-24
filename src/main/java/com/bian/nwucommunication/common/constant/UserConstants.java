@@ -24,7 +24,4 @@ public class UserConstants {
     public static final Integer is_NOTICE = 1;//已通知
     public static final Integer NOT_NOTICE = 0;// 未通知
 
-    // 允许的文件格式
-    public static final String[] ALLOW_TYPE = {"jpg", "jpeg", "png","pdf","mp3","mp4","word"};
-    public static final String[] ALLOW_HEAD_IMG_TYPE = {"jpg", "jpeg", "png"};
 }
