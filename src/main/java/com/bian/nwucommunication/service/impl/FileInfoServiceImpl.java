@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
+import com.bian.nwucommunication.common.execption.ClientException;
 import com.bian.nwucommunication.common.execption.ServiceException;
 import com.bian.nwucommunication.dao.FileInfo;
 import com.bian.nwucommunication.dto.FileInfoDTO;
@@ -18,6 +19,7 @@ import com.bian.nwucommunication.dto.FileUploadDTO;
 import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.dto.req.RequirementReqDTO;
 import com.bian.nwucommunication.mapper.FileInfoMapper;
+import com.bian.nwucommunication.service.FileCheckService;
 import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.service.RequirementService;
 import com.bian.nwucommunication.util.*;
@@ -26,10 +28,12 @@ import com.bian.nwucommunication.common.constant.RedisConstants;
 import com.bian.nwucommunication.common.constant.UserConstants;
 import com.bian.nwucommunication.util.redis.RedisUtil;
 import jakarta.annotation.Resource;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,19 +43,15 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> implements FileInfoService {
 
-    @Resource
-    private FileInfoMapper fileInfoMapper;
-
-    @Resource
-    private RedisTemplate redisTemplate;
-    
-    @Resource
-    private FileUtil fileUtil;
-
-    @Resource
-    private RequirementService requirementService;
+    private final  FileInfoMapper fileInfoMapper;
+    private final RedisTemplate redisTemplate;
+    private final FileUtil fileUtil;
+    private final RequirementService requirementService;
+    private final FileCheckService fileCheckService;
+    private final EmailService emailService;
 
     @Override
     public List<FileInfoDTO> queryMyFile() {
@@ -98,9 +98,20 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
         String sensitiveWord = SensitiveWordUtil.checkSensitiveWord(fileUploadDTO);
         if(!StrUtil.isEmpty(sensitiveWord))
             throw new ServiceException(sensitiveWord,BaseErrorCode.SENSITIVE_WORD_EXIST);
+        // TODO 文件内容审核
         CompletableFuture.runAsync(() ->{
+            String filePath = null;
             try {
-                String filePath = fileUtil.upload(fileInputStream,originalFilename,OssConstants.FILE_ADDRESS);
+                filePath = fileUtil.upload(fileInputStream,originalFilename, OssConstants.FILE_ADDRESS);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            Boolean isRight = fileCheckService.checkNFSW(filePath);
+            if(!isRight){
+                emailService.sendWarning(user.getEmail(), fileUploadDTO.getKeyWord());
+                log.error("内容含有非法内容，请修改后重新上传");
+            }
+            try {
                 FileInfo fileInfo = BeanUtil.toBeanIgnoreCase(fileUploadDTO, FileInfo.class, true);
                 fileInfo.setPushDate(LocalDateTimeUtil.parseDate(DateUtil.today()));
                 fileInfo.setUserId(user.getId());
@@ -109,8 +120,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
                 fileInfo.setSchoolId(user.getSchoolId());
                 fileInfoMapper.insert(fileInfo);
             } catch (Exception e) {
-                log.error("文件上传失败{}",e.getMessage());
-                throw new ServiceException(BaseErrorCode.SERVICE_ERROR);
+                log.error("保存失败{}",e.getMessage());
             }
         });
 

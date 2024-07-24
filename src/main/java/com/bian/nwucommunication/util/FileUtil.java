@@ -6,7 +6,11 @@ import cn.hutool.core.util.IdUtil;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.model.PutObjectResult;
+import com.bian.nwucommunication.common.constant.OssConstants;
 import com.bian.nwucommunication.common.constant.UserConstants;
+import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
+import com.bian.nwucommunication.common.execption.ClientException;
+import com.bian.nwucommunication.common.execption.ServiceException;
 import com.bian.nwucommunication.config.OSSConfig;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +25,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.rmi.ServerException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -35,7 +40,9 @@ public class FileUtil {
     @Resource
     private OSSConfig ossConfig;
 
-    public String upload(InputStream inputStream,String originalFilename, String folderPrefix) throws IOException {
+    public String upload(InputStream inputStream,
+                         String originalFilename,
+                         String folderPrefix) throws IOException {
 
         //获取相关配置
         String bucketName = ossConfig.getBucketName();
@@ -62,9 +69,11 @@ public class FileUtil {
             PutObjectResult result = ossClient.putObject(bucketName, uploadFileName, inputStream);
             //拼装返回路径
             if (result != null) {
-                return "https://"+bucketName+"."+endPoint+"/"+uploadFileName;
+                return OssConstants.FILE_ADDRESS_PRE +bucketName+"."+endPoint+"/"+uploadFileName;
             }
-        } finally {
+        } catch (Exception e){
+            throw new ServiceException(BaseErrorCode.SERVICE_ERROR);
+        }finally {
             //OSS关闭服务，不然会造成OOM
             inputStream.close();
             ossClient.shutdown();
@@ -74,7 +83,7 @@ public class FileUtil {
 
     public static boolean isValidFileType(String fileName) {
         String fileExtension = FileNameUtil.extName(fileName).toLowerCase();
-        return Arrays.stream(UserConstants.ALLOW_TYPE).anyMatch(type -> type.equals(fileExtension));
+        return Arrays.stream(OssConstants.ALLOW_TYPE).anyMatch(type -> type.equals(fileExtension));
     }
 
     /**
@@ -94,10 +103,9 @@ public class FileUtil {
         // 检查文件类型
         String fileName = multipartFile.getOriginalFilename();
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
-        if (!Arrays.asList("jpg", "jpeg", "png").contains(ext)) {
-            throw new Exception("不支持该格式 " + ext);
+        if(!Arrays.asList(OssConstants.ALLOW_HEAD_IMG_TYPE).contains(ext)){
+            throw new ClientException("不支持该格式: " + ext);
         }
-
         // 创建一个临时文件来保存上传的图像
         Path tempFile = Files.createTempFile("temp-image-", "." + ext);
         File tempFileFile = tempFile.toFile();

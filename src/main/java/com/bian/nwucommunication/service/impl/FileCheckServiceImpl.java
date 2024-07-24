@@ -1,100 +1,57 @@
 package com.bian.nwucommunication.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.date.LocalDateTimeUtil;
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.bian.nwucommunication.common.constant.RedisConstants;
+
+import com.bian.nwucommunication.common.constant.NsfwConstants;
+import com.bian.nwucommunication.common.constant.OssConstants;
 import com.bian.nwucommunication.common.execption.ClientException;
-import com.bian.nwucommunication.dao.FileInfo;
-import com.bian.nwucommunication.dao.Notice;
-import com.bian.nwucommunication.dto.FileInfoDTO;
-import com.bian.nwucommunication.dto.req.CheckFileReqDTO;
-import com.bian.nwucommunication.dto.resp.RequirementRespDTO;
-import com.bian.nwucommunication.mapper.FileInfoMapper;
+import com.bian.nwucommunication.dto.NsfwDTO;
 import com.bian.nwucommunication.service.FileCheckService;
-import com.bian.nwucommunication.service.FileInfoService;
-import com.bian.nwucommunication.service.NoticeService;
-import com.bian.nwucommunication.service.RequirementService;
-import com.bian.nwucommunication.common.constant.UserConstants;
-import com.bian.nwucommunication.util.redis.RedisUtil;
-import com.bian.nwucommunication.util.redis.MessageProducer;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.Arrays;
 
 @Service
 @Slf4j
-public class FileCheckServiceImpl  extends ServiceImpl<FileInfoMapper, FileInfo> implements FileCheckService {
+public class FileCheckServiceImpl implements FileCheckService {
 
     @Resource
-    private FileInfoMapper fileInfoMapper;
+    private RestTemplate restTemplate;
 
-    @Resource
-    private RequirementService requirementService;
-
-    @Resource
-    private NoticeService noticeService;
-
-    @Resource
-    private FileInfoService fileInfoService;
-
-    @Resource
-    private RedisTemplate redisTemplate;
-
-    @Resource
-    private MessageProducer messageProducer;
 
     @Override
-    public List<FileInfoDTO> queryAllFilePage(int currentPage, int pageSize) {
-        Page<FileInfo> page = new Page<>(currentPage, pageSize);
-        LambdaQueryWrapper<FileInfo> queryWrapper = Wrappers.lambdaQuery(FileInfo.class)
-                .orderByDesc(FileInfo::getPushDate);
-        Page<FileInfo> fileInfoPage = fileInfoMapper.selectPage(page, queryWrapper);
-        return BeanUtil.copyToList(fileInfoPage.getRecords(), FileInfoDTO.class);
+    public Boolean checkNFSW(String fileUrl) {
+        // 获取文件的后缀（png、jpg、mp4）
+        String ext = fileUrl.substring(fileUrl.lastIndexOf(".") + 1);
+        Double score = null;
+        if(Arrays.asList(OssConstants.ALLOW_HEAD_IMG_TYPE).contains(ext)){
+            score = checkImg(fileUrl, NsfwConstants.INTERFACE_RETRY_TIMES);
+        }
+        if(score > NsfwConstants.YELLOW_IMG_SCORE)
+            return false;
+        return true;
     }
 
-    @Override
-    public void checkFile(CheckFileReqDTO checkFileReqDTO) {
-        FileInfo fileInfo = null;
+    private Double checkImg(String fileUrl,int retryTimes) {
+        if(retryTimes <= 0) {
+            log.error("图片鉴黄服务调用失败,文件路径：{}",fileUrl);
+            return Double.MIN_VALUE;
+        }
         try {
-            fileInfo = fileInfoMapper.selectById(checkFileReqDTO.getFileId());
-        } catch (Exception e) {
-            log.error("文件不存在{}",e.getMessage());
-            throw new ClientException("文件不存在");
+            ResponseEntity<NsfwDTO> responseEntity = restTemplate.getForEntity(
+                    NsfwConstants.NSFW_INTERFACE_ADDRESS+fileUrl,
+                    NsfwDTO.class);
+            NsfwDTO nsfwDTO = responseEntity.getBody();
+            if(nsfwDTO.getScore() == null)
+                log.error("文件路径错误{}",fileUrl);
+            return nsfwDTO.getScore();
+        } catch (RestClientException e) {
+            checkImg(fileUrl,retryTimes-1);
         }
-        fileInfoMapper.updateById(fileInfo.setIsPass(checkFileReqDTO.getNewStatus()));
-        if(Objects.equals(checkFileReqDTO.getNewStatus(), UserConstants.FILE_HAVE_PASS)){
-            List<RequirementRespDTO> requirementList = requirementService.searchRequirementByKeyWord(fileInfo.getKeyWord());
-            for(RequirementRespDTO item : requirementList){
-                messageProducer.sendMessage(RedisConstants.REDIS_STREAM_NAME,item.getEmail(),item.getKeyWord(),item.getId());
-                Notice notice = Notice.builder()
-                        .isNotice(UserConstants.NOT_NOTICE)
-                        .fileId(fileInfo.getId())
-                        .date(LocalDateTimeUtil.parseDate(DateUtil.today()))
-                        .keyWord(item.getKeyWord())
-                        .userId(item.getUserId())
-                        .build();
-                boolean saved = noticeService.save(notice);
-            }
-        }
-
-        Set keys = new RedisUtil().scanKeys(redisTemplate, RedisConstants.CACHE_All_School_KEY, RedisConstants.CACHE_SCANS_COUNT);
-        redisTemplate.delete(keys);
-        fileInfoService.updateRedisSchoolFile();
-
-
-
+        return Double.MIN_VALUE;
     }
-
-
 }
