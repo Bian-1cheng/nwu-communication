@@ -103,7 +103,7 @@ public class FileUtil {
         // 检查文件类型
         String fileName = multipartFile.getOriginalFilename();
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
-        if(!Arrays.asList(OssConstants.ALLOW_HEAD_IMG_TYPE).contains(ext)){
+        if(!Arrays.asList(OssConstants.ALLOW_IMG_TYPE).contains(ext)){
             throw new ClientException("不支持该格式: " + ext);
         }
         // 创建一个临时文件来保存上传的图像
