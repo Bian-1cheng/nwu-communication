@@ -86,17 +86,18 @@ public class AdminServiceImpl  extends ServiceImpl<FileInfoMapper, FileInfo> imp
         fileInfoMapper.updateById(fileInfo.setIsPass(checkFileReqDTO.getNewStatus()));
         if(Objects.equals(checkFileReqDTO.getNewStatus(), UserConstants.FILE_HAVE_PASS)){
             List<RequirementRespDTO> requirementList = requirementService.searchRequirementByKeyWord(fileInfo.getKeyWord());
-            for(RequirementRespDTO item : requirementList){
-                messageProducer.sendMessage(RedisConstants.REDIS_STREAM_NAME,item.getEmail(),item.getKeyWord(),item.getId());
-                Notice notice = Notice.builder()
-                        .isNotice(UserConstants.NOT_NOTICE)
-                        .fileId(fileInfo.getId())
-                        .date(LocalDateTimeUtil.parseDate(DateUtil.today()))
-                        .keyWord(item.getKeyWord())
-                        .userId(item.getUserId())
-                        .build();
-                boolean saved = noticeService.save(notice);
-            }
+            if(!requirementList.isEmpty())
+                for(RequirementRespDTO item : requirementList){
+                    messageProducer.sendMessage(RedisConstants.REDIS_STREAM_NAME,item.getEmail(),item.getKeyWord(),item.getId());
+                    Notice notice = Notice.builder()
+                            .isNotice(UserConstants.NOT_NOTICE)
+                            .fileId(fileInfo.getId())
+                            .date(LocalDateTimeUtil.parseDate(DateUtil.today()))
+                            .keyWord(item.getKeyWord())
+                            .userId(item.getUserId())
+                            .build();
+                    boolean saved = noticeService.save(notice);
+                }
         }
 
         Set keys = new RedisUtil().scanKeys(redisTemplate, RedisConstants.CACHE_All_School_KEY, RedisConstants.CACHE_SCANS_COUNT);
