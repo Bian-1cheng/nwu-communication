@@ -38,4 +38,13 @@ public enum SchoolEnum {
         }
         return 0;
     }
+
+    public static String getNameByCode(int code) {
+        for (SchoolEnum school : SchoolEnum.values()) {
+            if (school.getCode() == (code)) {
+                return school.getName();
+            }
+        }
+        return "未知";
+    }
 }
