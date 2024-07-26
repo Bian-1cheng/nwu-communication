@@ -4,26 +4,20 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
-import com.bian.nwucommunication.common.execption.ClientException;
 import com.bian.nwucommunication.common.execption.ServiceException;
 import com.bian.nwucommunication.common.result.Result;
 import com.bian.nwucommunication.common.result.Results;
 import com.bian.nwucommunication.dao.FileInfo;
-import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.FileInfoDTO;
 import com.bian.nwucommunication.dto.FileUploadDTO;
-import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.dto.resp.FileInfoDetailRespDTO;
-import com.bian.nwucommunication.mapper.FileInfoMapper;
 import com.bian.nwucommunication.service.FileInfoService;
 import com.bian.nwucommunication.service.UserService;
 import com.bian.nwucommunication.util.FileUtil;
-import com.bian.nwucommunication.util.UserHolder;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -77,7 +71,7 @@ public class FileInfoController {
         FileUploadDTO fileUploadDTO = new FileUploadDTO(title,intro,isPublic,schoolName,keyWord);
         if(!FileUtil.isValidFileType(file.getOriginalFilename()))
             throw new ServiceException(BaseErrorCode.FILE_TYPE_ERROR);
-        fileInfoService.uploadFile(fileUploadDTO,file.getOriginalFilename(),file.getInputStream());
+        fileInfoService.uploadFile(fileUploadDTO,file);
         return Results.success("文件上传成功");
     }
 
