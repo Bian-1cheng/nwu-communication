@@ -112,13 +112,12 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
             log.error("保存文件失败");
         }
 
-        File finalTempFile = tempFile;
         String ext = fileName.substring(fileName.lastIndexOf(".") + 1);
-        double score = 0.0;
+        double score = 0.0; // 为违规图片的得分，> 0.8 为违规图片
         if(Arrays.asList(OssConstants.ALLOW_IMG_TYPE).contains(ext)){
             String OssfilePath = null;
             try {
-                OssfilePath = fileUtil.upload(new FileInputStream(finalTempFile),file.getOriginalFilename(), OssConstants.FILE_ADDRESS);
+                OssfilePath = fileUtil.upload(new FileInputStream(tempFile),file.getOriginalFilename(), OssConstants.FILE_ADDRESS);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -137,7 +136,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
             }
             String filePath;
             try {
-                filePath = fileUtil.upload(new FileInputStream(finalTempFile),file.getOriginalFilename(), OssConstants.FILE_ADDRESS);
+                filePath = fileUtil.upload(new FileInputStream(tempFile),file.getOriginalFilename(), OssConstants.FILE_ADDRESS);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
