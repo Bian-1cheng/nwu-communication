@@ -125,7 +125,7 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
             score = fileCheckService.checkImgNsfw(OssfilePath,NsfwConstants.INTERFACE_RETRY_TIMES);
         }
         if (score > NsfwConstants.YELLOW_IMG_SCORE)
-            throw new ClientException("上传的图片为违法图片");
+            throw new ClientException("上传的图片为违规图片");
 
         CompletableFuture.runAsync(() ->{
             if(Arrays.asList(OssConstants.ALLOW_VIDEO_TYPE).contains(ext)){
@@ -133,7 +133,6 @@ public class FileInfoServiceImpl extends ServiceImpl<FileInfoMapper,FileInfo> im
                 if(!IsPass){
                     emailService.sendWarning(user.getEmail(), fileUploadDTO.getKeyWord());
                     log.error("内容含有非法内容，请修改后重新上传");
-                    throw new ClientException("上传内容有违规内容");
                 }
             }
             String filePath;

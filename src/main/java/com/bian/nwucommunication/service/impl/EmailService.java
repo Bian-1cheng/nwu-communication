@@ -86,12 +86,12 @@ public class EmailService {
         }
     }
 
-    public void sendWarning(String to, String keyWord) {
+    public void sendWarning(String to, String illegalContent) {
         Context context = new Context();
-        context.setVariable(EmailConstants.Require_EMAIL_PRE, keyWord);
+        context.setVariable(EmailConstants.ILLEGAL_EMAIL_PRE, illegalContent);
         String template = templateEngine.process(EmailConstants.ILLEGAL_EMAIL_TEMPLATE, context);
         try {
-            MailUtil.send(eMailConfig.getAccount(), to, EmailConstants.CODE_EMAIL_SUBJECT, template, true);
+            MailUtil.send(eMailConfig.getAccount(), to, EmailConstants.ILLEGAL_EMAIL_SUBJECT, template, true);
         } catch (Exception e) {
             log.error("邮件发送失败：{}",to);
             throw new ClientException(BaseErrorCode.EMAIL_NOT_EXIST);
