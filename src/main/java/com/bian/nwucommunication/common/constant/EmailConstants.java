@@ -15,4 +15,6 @@ public class EmailConstants {
 
     // 警告文件
     public static final String ILLEGAL_EMAIL_TEMPLATE = "illegalFileTemplate";
+    public static final String ILLEGAL_EMAIL_PRE = "illegalContent";
+    public static final String ILLEGAL_EMAIL_SUBJECT = "违规内容提醒";
 }
