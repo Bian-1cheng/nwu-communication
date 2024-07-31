@@ -12,6 +12,7 @@ public class UserConstants {
     public static final Integer FILE_HAVE_PASS = 1;
     public static final Integer FILE_NOT_PASS = 3;
 
+    // 默认点赞数量
     public static final Integer FILE_INIT_GREAT_NUM = 0;
 
     // 用户上传的头像压缩后的存储位置
