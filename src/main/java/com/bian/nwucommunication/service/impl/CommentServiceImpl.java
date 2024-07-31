@@ -6,10 +6,10 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.date.LocalDateTimeUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.bian.nwucommunication.common.constant.UserConstants;
 import com.bian.nwucommunication.common.execption.ClientException;
+import com.bian.nwucommunication.common.execption.ServiceException;
 import com.bian.nwucommunication.dao.Comment;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.CommentDTO;
@@ -32,6 +32,7 @@ import java.util.List;
 @Service
 @Slf4j
 public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> implements CommentService {
+
 
     @Resource
     private CommentMapper commentMapper;
@@ -83,6 +84,25 @@ public class CommentServiceImpl extends ServiceImpl<CommentMapper, Comment> impl
         CommentDTO commentDTO = BeanUtil.toBean(comment, CommentDTO.class);
         commentDTO.setNickName(user.getNickName());
         commentDTO.setHeadImg(user.getHeadImg());
+        return commentDTO;
+    }
+
+    @Override
+    public CommentDTO putCommentBaseAI(CommentReqDTO commentReqDTO, UserDTO userDTO) {
+        Comment comment = BeanUtil.toBean(commentReqDTO, Comment.class);
+        comment.setTextDate(LocalDateTimeUtil.parseDate(DateUtil.today()));
+        comment.setUserId(userDTO.getId());
+        comment.setIsShd(false);
+        comment.setGreatNum(UserConstants.FILE_INIT_GREAT_NUM);
+        try {
+            commentMapper.insert(comment);
+        } catch (Exception e) {
+            log.error("发表评论失败{}",e.getMessage());
+            throw new ClientException("评论失败");
+        }
+        CommentDTO commentDTO = BeanUtil.toBean(comment, CommentDTO.class);
+        commentDTO.setNickName(userDTO.getNickName());
+        commentDTO.setHeadImg(userDTO.getHeadImg());
         return commentDTO;
     }
 }
