@@ -17,4 +17,5 @@ public interface UserService extends IService<UserInfo> {
 
     void getCode(String email);
 
+    UserDTO getUserByName(String name);
 }

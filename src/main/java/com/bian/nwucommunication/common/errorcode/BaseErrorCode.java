@@ -32,6 +32,7 @@ public enum BaseErrorCode implements IErrorCode{
 
     // ========== 一级宏观错误码 系统执行出错 ==========
     SERVICE_ERROR("B000001", "系统执行出错"),
+    SERVICE_BOT_ERROR("B000002", "机器人未创建"),
     // ========== 二级宏观错误码 系统执行超时 ==========
     SERVICE_TIMEOUT_ERROR("B000100", "系统执行超时"),
     SERVICE_File_ERROR("B000101", "文件处理异常"),
