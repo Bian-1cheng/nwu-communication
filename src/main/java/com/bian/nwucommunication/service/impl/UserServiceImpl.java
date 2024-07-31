@@ -10,6 +10,7 @@ import com.bian.nwucommunication.common.errorcode.BaseErrorCode;
 import com.bian.nwucommunication.common.execption.ClientException;
 import com.bian.nwucommunication.common.constant.SchoolEnum;
 import com.bian.nwucommunication.common.execption.ServiceException;
+import com.bian.nwucommunication.dao.Requirement;
 import com.bian.nwucommunication.dao.UserInfo;
 import com.bian.nwucommunication.dto.UserDTO;
 import com.bian.nwucommunication.dto.UserInfoDTO;
@@ -118,7 +119,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper,UserInfo> implements
         redisTemplate.opsForValue().set(CACHE_CODE_KEY+email,code,CACHE_CODE_TTL, TimeUnit.MINUTES);
     }
 
-    private Boolean checkCode(String email,String code){
+    @Override
+    public UserDTO getUserByName(String name) {
+        LambdaQueryWrapper<UserInfo> queryWrapper = Wrappers.lambdaQuery(UserInfo.class)
+                .eq(UserInfo::getNickName, name);
+        UserInfo userInfo = userMapper.selectOne(queryWrapper);
+        UserDTO userDTO = BeanUtil.toBean(userInfo, UserDTO.class);
+        return userDTO;
+    }
+
+    private Boolean checkCode(String email, String code){
         String cacheCode = (String) redisTemplate.opsForValue().get(CACHE_CODE_KEY + email);
         return code.equals(cacheCode);
     }
